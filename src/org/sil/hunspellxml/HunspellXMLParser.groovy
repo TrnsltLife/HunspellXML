@@ -172,7 +172,6 @@ class HunspellXMLParser
 		processChildren(h)
 		
 		check.mapFlagPaths()
-		check.printFlagPaths()
 		check.checkRoutes()
 		
 		return data

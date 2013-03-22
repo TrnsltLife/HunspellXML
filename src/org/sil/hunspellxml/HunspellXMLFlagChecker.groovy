@@ -21,8 +21,6 @@ class HunspellXMLFlagChecker
 	def missingFlagPath = HunspellXMLFlagPath.createMissing()
 	def terminalFlagPath = HunspellXMLFlagPath.createTerminal()
 	
-	def flagPaths = []
-	
 	String flagType
 	
 	Log log = new Log()
@@ -60,6 +58,19 @@ class HunspellXMLFlagChecker
 			def flagPathS = flagPath.toString()
 			if(!flagMap.containsKey(flagPathS)){flagMap[flagPathS] = flagPath}
 			if(!wordFlags.contains(flagPathS)){wordFlags << flagPathS}
+		}
+		if(!normals) //only special flags present
+		{
+			def flagPath = HunspellXMLFlagPath.createWord(word, "", specials)
+			flagPath.special = true
+			assignSpecialFlags(flagPath, specials)
+			//log.info("word with no normal affix flags, only specials...: " + flagPath)
+			def flagPathS = flagPath.toString()
+			if(!flagMap.containsKey(flagPathS)){flagMap[flagPathS] = flagPath}
+			if(!wordFlags.contains(flagPathS)){combineFlags << flagPathS}
+			//add word continuation rule + terminalFlagPath to the checked routes, so this one can be checked
+			//helps catch errors like a CIRCUMFIX flag in the word continuation rules
+			addCheckedRoute([flagPath, terminalFlagPath])
 		}
 	}
 	
@@ -133,11 +144,10 @@ class HunspellXMLFlagChecker
 	
 	def mapFlagPaths()
 	{
-		flagPaths = []
 		for(flagPathKey in wordFlags)
 		{
 			def flagPath = flagMap[flagPathKey]
-			flagPaths << traceFlagPaths(flagPath, 0, false, [])
+			traceFlagPaths(flagPath, 0, false, [])
 		}
 	}
 	
@@ -493,11 +503,11 @@ class HunspellXMLFlagChecker
 				(circumfixCount == 2 && continuationCount < 3) ||
 				(circumfixCount == 2 && continuationCount >= 3 && (!route[2].circumfix || !route[4].circumfix)))
 			{
-				warnings << "Circumfix Path Warning: The circumfix flag can only be used in the first and second affixes' continuation rules. (It must be used on both). It may not be used on the third affix's continuation rules."
+				warnings << "Circumfix Path Error: The circumfix flag can only be used in the first and second affixes' continuation rules. (It must be used on both). It may not be used on the third affix's continuation rules."
 			}
 			if(circumfixCount >= 2 && route.size() >= 6 && !route[5].terminal)
 			{
-				warnings << "Circumfix Path Warning: Affixation paths containing the circumfix flag can only contain 2 affixes. A third affix is always invalid."
+				warnings << "Circumfix Path Error: Affixation paths containing the circumfix flag can only contain 2 affixes. A third affix is always invalid."
 			}
 			if(route[0].circumfix)
 			{
@@ -508,12 +518,11 @@ class HunspellXMLFlagChecker
 			{
 				if(complexPrefixes && route[1].suffix && route[2].circumfix && route[3].prefix)
 				{
-					warnings << "Circumfix Order Warning: When using the circumfix flag with COMPLEXPREFIXES enabled (2-prefix mode), the first affix must be a prefix and the second affix must be a suffix."
-					warnings << "Circumfix Order Warning: When COMPLEXPREFIXES is set (2-prefix mode), the only valid circumfix affixation route is: prefix-{CIRCUMFIX}->suffix."
+					warnings << "Circumfix Order Error: When using the circumfix flag with COMPLEXPREFIXES enabled (2-prefix mode), the first affix must be a prefix and the second affix must be a suffix."
 				}
 				else if(!complexPrefixes && route[1].prefix && route[2].circumfix && route[3].suffix)
 				{
-					warnings << "Circumfix Order Warning: When using the circumfix flag with COMPLEXPREFIXES disabled (2-suffix mode), the first affix must be a suffix and the second affix must be a prefix."
+					warnings << "Circumfix Order Error: When using the circumfix flag with COMPLEXPREFIXES disabled (2-suffix mode), the first affix must be a suffix and the second affix must be a prefix."
 				}
 			}
 		}

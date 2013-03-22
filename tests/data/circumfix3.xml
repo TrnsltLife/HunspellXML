@@ -1,0 +1,35 @@
+<hunspell>
+<suppress blankLines="true" comments="true" metadata="true" myBlankLines="true" myComments="true"/>
+
+	<affixFile>
+		<settings>
+			<languageCode>en_US</languageCode>
+			<characterSet>UTF-8</characterSet>
+			<flagType>long</flagType>
+			<circumfix flag="CF"/>
+		</settings>
+		
+		<affixes>
+			<prefix flag="EM" cross="true">
+				<rule add="en" where="[^bpmw]" combineFlags="CF EN"/>
+				<rule add="em" where="[bpmw]" combineFlags="CF EN"/>
+			</prefix>
+			<suffix flag="EN" cross="true">
+				<rule add="n" where="e" combineFlags="CF"/>
+				<rule add="en" where="[^e]" combineFlags="CF"/>
+			</suffix>
+		</affixes>
+	</affixFile>
+	
+	<tests>
+	<good>bold light</good>
+	<bad>embolden enlighten</bad>
+	</tests>
+
+	<dictionaryFile>
+		<words>
+			bold/EM
+			light/EM
+		</words>
+	</dictionaryFile>
+</hunspell>
