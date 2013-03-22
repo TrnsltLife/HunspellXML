@@ -1,0 +1,51 @@
+//includeTargets << gant.targets.Clean
+
+def gantHome = System.getenv("GANT_HOME")
+
+def version = "0.2"
+def srcDir = "src"
+def classesDir = "bin"
+def distributablesDir = "build"
+def distributedJarName = "hunspell-xml-${version}.jar"
+def distributedJarPath = "${distributablesDir}/${distributedJarName}"
+
+def jingLib = 		"lib/jing.jar"
+
+ant.taskdef(name:'groovyc', classname:'org.codehaus.groovy.ant.Groovyc')
+
+
+target(clean:"Delete files")
+{
+	ant.delete(file:distributedJarPath)
+	ant.delete(dir:classesDir)
+}
+
+
+target(initDirs:"Create all the required directories")
+{
+	def dirs = [classesDir, distributablesDir]
+	dirs.each() { ant.mkdir(dir: it) }
+}
+
+
+target(compile:"Compile classes")
+{
+	depends(initDirs)
+	groovyc(srcdir:srcDir, destdir:classesDir, classpath:"${classesDir};${jingLib}")
+	{
+		javac()
+	}
+}
+
+
+target(jar: 'Jar up the classes')
+{
+	depends(compile)
+	ant.jar(basedir: classesDir, destfile: distributedJarPath, excludes: 'test/**/*')
+}
+
+
+target(default:"Default target")
+{
+	depends(jar)
+}

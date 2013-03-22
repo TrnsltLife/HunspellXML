@@ -1,6 +1,12 @@
+.settings/
+bin/**
+tmp/**
+tmp/**
+snippets/**
+local-tests/**
+hunspell-xml*.jar
 *.class
+*.tmp
+*.bak
+local.properties
 
-# Package Files #
-*.jar
-*.war
-*.ear
