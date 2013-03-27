@@ -25,7 +25,7 @@ class HunspellXMLExporter
 	String goodFile = ""
 	String badFile = ""
 	
-	def options = [hunspell:true,
+	static final defaultOptions = [hunspell:true,
 		tests:true,
 		thesaurus:true,
 		license:true,
@@ -33,8 +33,12 @@ class HunspellXMLExporter
 		libreOffice:true,
 		firefox:true,
 		opera:true,
+		relaxNG:false,
+		runTests:true,
 		customPath:"",
 		hunspellFileName:""]
+	
+	def options = defaultOptions.clone()
 		
 	public HunspellXMLExporter(HunspellXMLData data, Log log, optionDiff)
 	{

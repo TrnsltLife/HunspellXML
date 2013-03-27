@@ -11,6 +11,7 @@ class HunspellXMLConverter
 	def exporter
 	def validator
 	def parser
+	def tester
 	
 	public HunspellXMLConverter(xmlFile)
 	{
@@ -19,6 +20,7 @@ class HunspellXMLConverter
 			this.xmlFile = new File(xmlFile)
 		}
 		else{this.xmlFile = xmlFile}
+		this.exportOptions = HunspellXMLExporter.defaultOptions
 	}
 	
 	public HunspellXMLConverter(xmlFile, Map exportOptions)
@@ -31,7 +33,7 @@ class HunspellXMLConverter
 		this.exportOptions = exportOptions
 	}
 	
-	public HunspellXMLConverter(xmlFile, Log log, Map exportOptions=[:])
+	public HunspellXMLConverter(xmlFile, Log log, Map exportOptions=HunspellXMLExporter.defaultOptions)
 	{
 		this(xmlFile)
 		this.log = log
@@ -96,7 +98,7 @@ class HunspellXMLConverter
 		//Test the test files
 		if(exportOptions.runTests && exporter?.dicFile)
 		{
-			def tester = new HunspellTester(exporter.dicFile)
+			tester = new HunspellTester(exporter.dicFile)
 			tester.checkTestFiles(exporter)
 		}
 	}
