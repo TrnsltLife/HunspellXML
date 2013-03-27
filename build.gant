@@ -2,7 +2,7 @@
 
 def gantHome = System.getenv("GANT_HOME")
 
-def version = "0.2"
+def version = "0.21"
 def srcDir = "src"
 def classesDir = "bin"
 def distributablesDir = "build"

@@ -21,7 +21,7 @@ def testFileErrors(file, closureAssertion)
 		firefox:false, opera:false, libreOffice:false,
 		//hunspellFileName:fileName,
 		customPath:"/",
-		relaxNG:false])
+		relaxNG:false, runTests:true])
 	hxc.convert()
 	
 	def data = hxc.parser.data

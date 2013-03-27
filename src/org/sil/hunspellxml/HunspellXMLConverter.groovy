@@ -92,5 +92,12 @@ class HunspellXMLConverter
 			log.info("Find your files in: " + hxe.baseDir)
 		}
 		validator = hxv
+		
+		//Test the test files
+		if(exportOptions.runTests && exporter?.dicFile)
+		{
+			def tester = new HunspellTester(exporter.dicFile)
+			tester.checkTestFiles(exporter)
+		}
 	}
 }

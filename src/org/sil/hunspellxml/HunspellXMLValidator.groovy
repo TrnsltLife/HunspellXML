@@ -545,7 +545,7 @@ public static final relaxngXMLTemplate = '''
 				
 				<!-- forbidWarn -->
 				<optional>
-				<element name="forbidWarn"><attribute name="flag">[[FLAG]]</attribute></element>
+				<element name="forbidWarn"><empty/></element>
 				</optional>
 				
 				<!-- maxCompoundSuggestions -->
