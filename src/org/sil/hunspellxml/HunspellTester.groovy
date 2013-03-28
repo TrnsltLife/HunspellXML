@@ -9,8 +9,11 @@ public class HunspellTester
 	
 	HunspellTester(String dictionaryFilePath)
 	{
-		String basePath = dictionaryFilePath.replaceAll(/\.dic$/, "")
-		println(basePath)
+		String basePath
+		if(dictionaryFilePath.endsWith(".aff")){basePath = dictionaryFilePath.replaceAll(/\.aff$/, "")}
+		else if(dictionaryFilePath.endsWith(".dic")){basePath = dictionaryFilePath.replaceAll(/\.dic$/, "")}
+		else{basePath = dictionaryFilePath}
+		
 		hunspell = Hunspell.getInstance()
 		dict = hunspell.getDictionary(basePath);
 	}
