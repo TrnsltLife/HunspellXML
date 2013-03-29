@@ -188,8 +188,6 @@ public static final relaxngXMLTemplate = '''
 	</optional>
 
 	<interleave>
-		[[COMMENT]]
-		
 		<!-- metadata (REQUIRED) -->
 		<optional>
 		<element name="metadata">
