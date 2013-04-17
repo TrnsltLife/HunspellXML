@@ -47,8 +47,9 @@ class HunspellXMLUtils
 		else{return characterSet}
 	}
 	
-	static List hunspellFlagsToList(String flagType, String flags)
+	static List hunspellFlagsToList(Log log, String flagType, String flags)
 	{
+		flags = flags.trim()
 		if(flagType == "short" || flagType == "UTF-8")
 		{
 			def list = []
@@ -61,7 +62,11 @@ class HunspellXMLUtils
 		else if(flagType == "long")
 		{
 			def list = []
-			for(def i=0; i<flags.size(); i+=2)
+			if(flags.size() % 2 != 0)
+			{
+				log.error("Hunspell flag list ${flags} is invalid for flagType: ${flagType}")
+			}
+			for(def i=0; i+1<flags.size(); i+=2)
 			{
 				list << flags[i..i+1]
 			}
@@ -69,7 +74,8 @@ class HunspellXMLUtils
 		}
 		else if(flagType == "num")
 		{
-			return flags.split(/,/).toList()
+			def list = flags.split(/,/).toList()
+			return list
 		}
 	}
 }

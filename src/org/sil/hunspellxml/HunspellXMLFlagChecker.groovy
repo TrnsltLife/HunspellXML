@@ -204,7 +204,7 @@ class HunspellXMLFlagChecker
 	
 	def extractSpecialFlags(String flags)
 	{
-		def list = HunspellXMLUtils.hunspellFlagsToList(flagType, flags)
+		def list = HunspellXMLUtils.hunspellFlagsToList(log, flagType, flags)
 		return extractSpecialFlags(list)
 	}
 	
@@ -287,7 +287,7 @@ class HunspellXMLFlagChecker
 			checkRoute(route, warnings)
 			if(warnings)
 			{
-				log.warning(shortFormatRoute(route) + "\r\n{\r\n\t" + warnings.join("\r\n\t") + "\r\n}\r\n")
+				log.warning(shortFormatRoute(route, true) + "\r\n{\r\n\t" + warnings.join("\r\n\t") + "\r\n}\r\n")
 			}
 		}
 	}
@@ -444,7 +444,7 @@ class HunspellXMLFlagChecker
 
 		if(allNeedAffix)
 		{
-			warnings << "Need Affix Error: All of the continuation paths from the final " + (route.size() >= 6 ? "valid " : "") + "affix -- " + shortFormatRoute([flagPath]).trim() + " -- have the NEEDAFFIX flag attached, but they do not lead to another affix. This means this affixation path is invalid and will not work properly." +
+			warnings << "Need Affix Error: All of the continuation paths from the final " + (route.size() >= 6 ? "valid " : "") + "affix -- " + shortFormatRoute([flagPath], true).trim() + " -- have the NEEDAFFIX flag attached, but they do not lead to another affix. This means this affixation path is invalid and will not work properly." +
 						(route.size() >= 6 ? " Since this affixation path already has the maximum number of three affixes, this affixation path can never be properly completed unless you remove the NEEDAFFIX flag from the final affix.": "")
 		}
 	}
@@ -530,7 +530,7 @@ class HunspellXMLFlagChecker
 	
 	def anyRoutesCircumfix(HunspellXMLFlagPath flagPath)
 	{
-		//log.info("anyRoutesCircumfix(" + shortFormatRoute(flagPath) + ")")
+		//log.info("anyRoutesCircumfix(" + shortFormatRoute(flagPath, true) + ")")
 		def anyCircumfix = []
 		if(!flagPath.branches){anyCircumfix = []}
 		else
@@ -540,7 +540,7 @@ class HunspellXMLFlagChecker
 				if(branch.circumfix)
 				{
 					anyCircumfix << branch
-					//log.info("\t" + shortFormatRoute(branch))
+					//log.info("\t" + shortFormatRoute(branch, true))
 				}
 			}
 		}
@@ -573,7 +573,7 @@ class HunspellXMLFlagChecker
 	}
 	
 	
-	def shortFormatRoute(route)
+	def shortFormatRoute(route, printWord=false)
 	{
 		StringBuffer sb = new StringBuffer()
 		def lastFlagPath
@@ -583,7 +583,15 @@ class HunspellXMLFlagChecker
 			{
 				if(flagPath.type == HunspellXMLFlagPath.WORD)
 				{
-					sb << "WORD[" + flagPath.word + "}"
+					sb << "WORD"
+					if(printWord)
+					{
+						sb << "[" + flagPath.word + "] "
+					}
+					else
+					{
+						sb << " "
+					}
 				}
 				sb << "--"
 				if(flagPath.specialFlags){sb << "{" + flagPath.specialFlags.join(",") + "}"}

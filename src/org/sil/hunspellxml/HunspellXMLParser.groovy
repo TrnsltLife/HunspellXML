@@ -184,7 +184,7 @@ class HunspellXMLParser
 	
 	List hunspellFlagsToList(String flags)
 	{
-		return HunspellXMLUtils.hunspellFlagsToList(data.metadata.flagType, flags)
+		return HunspellXMLUtils.hunspellFlagsToList(log, data.metadata.flagType, flags)
 	}
 	
 	String formatFlagList(String flags)
