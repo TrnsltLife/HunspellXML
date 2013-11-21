@@ -57,6 +57,12 @@ class HunspellXMLConverter
 		//Read the text in again with the right encoding
 		xmlDoc = xmlFile.newReader(javaCharSet).text
 		
+		//Check for UTF-8 BOM, and if it exists, remove it.
+		if(javaCharSet == "UTF-8" && xmlDoc.startsWith("\uFEFF"))
+		{
+			xmlDoc -= "\uFEFF"
+		}
+		
 		//Find the path of the file. This will be the root for the exported data.
 		def path = xmlFile.getParentFile()
 		

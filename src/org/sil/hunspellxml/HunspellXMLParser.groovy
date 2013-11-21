@@ -168,7 +168,15 @@ class HunspellXMLParser
 	
 	HunspellXMLData parseText(String xmlDoc)
 	{
-		def h = new XmlParser().parseText(xmlDoc)
+		def h 
+		try
+		{
+			h = new XmlParser().parseText(xmlDoc)
+		}
+		catch(Exception e)
+		{
+			log.error("Error parsing XML file. " + EOL + e.toString() + EOL)
+		}
 		processChildren(h)
 		
 		check.mapFlagPaths()
