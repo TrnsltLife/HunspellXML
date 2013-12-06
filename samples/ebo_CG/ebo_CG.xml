@@ -1,0 +1,573 @@
+<hunspell>
+<suppress blankLines="false" comments="false" metadata="true" myBlankLines="false" myComments="false"/>
+	
+	<affixFile>
+		<settings>
+			<languageCode>ebo_CG</languageCode>
+			<characterSet>UTF-8</characterSet>
+			<flagType>long</flagType>
+			<wordChars>-</wordChars>
+			<complexPrefixes/>
+			<needAffix flag="NA"/>
+		</settings>
+		
+		<convert>
+			<input from="’" to="'"/>
+		</convert>
+		
+		<suggestions>
+			<tryChars capitalize="true">a b d e ɛ f g i ɨ k l m n ŋ o ɔ p r s t u ʉ v w y z ' -</tryChars>
+			
+			<replacements>
+				<!-- Deal with similar sounds and common misspellings within Teke -->
+				<replace from="e" to="ɛ" reverse="true"/>
+				<replace from="o" to="ɔ" reverse="true"/>
+				<replace from="i" to="ɨ" reverse="true"/>
+				<replace from="u" to="ʉ" reverse="true"/>
+				<replace from="u" to="w" reverse="true"/>
+				<replace from="ʉ" to="w" reverse="true"/>
+				<replace from="i" to="y" reverse="true"/>
+				<replace from="ɨ" to="y" reverse="true"/>
+				<replace from="ŋ" to="ng" reverse="true"/>
+				<replace from="n" to="ŋ" reverse="true"/>
+				<replace from="nts" to="ns"/>
+				<replace from="ndz" to="nz"/>
+				<replace from="mbv" to="mv"/>
+				<replace from="mpf" to="mf"/>
+				<replace from="ndj" to="nj"/>
+				
+				<!-- Deal with common misspellings influenced by French orthography, or alternate Bantu orthographies -->
+				<replace from="ch" to="sh"/>
+				<replace from="gn" to="ny"/>
+				<!-- <replace from="Â" to="AA"/> -->
+				<!-- <replace from="â" to="aa"/> -->
+				<replace from="Ê" to="EE"/>
+				<replace from="ê" to="ee"/>
+				<replace from="Î" to="II"/>
+				<replace from="î" to="ii"/>
+				<replace from="Ô" to="OO"/>
+				<replace from="ô" to="oo"/>
+				<replace from="Û" to="UU"/>
+				<replace from="û" to="uu"/>
+				
+				<replace from="Ã" to="Ã"/>
+				<replace from="ã" to="ã"/>
+				<replace from="Ẽ" to="Ẽ"/>
+				<replace from="ẽ" to="ẽ"/>
+				<replace from="Ĩ" to="Ĩ"/>
+				<replace from="ĩ" to="ĩ"/>
+				<replace from="Õ" to="Õ"/>
+				<replace from="õ" to="õ"/>
+				<replace from="Ũ" to="Ũ"/>
+				<replace from="ũ" to="ũ"/>
+
+				<replace from="É" to="É"/>
+				<replace from="é" to="é"/>
+				<replace from="È" to="Ɛ"/>
+				<replace from="è" to="ɛ"/>
+				<replace from="À" to="A"/>
+				<replace from="à" to="a"/>
+			</replacements>
+			
+			<mappings>
+				<map>a á ã â aa aã</map>
+				<map>e é ẽ ee eẽ ɛ ɛ́ ɛ̃ ɛɛ ɛɛ̃</map>
+				<map>i í ĩ ɨ ɨ́ ɨ̃ ii iĩ ɨɨ ɨɨ̃ y</map>
+				<map>o ó õ oo oõ ɔ ɔ́ ɔ̃ ɔɔ ɔɔ̃</map>
+				<map>u ú ũ ʉ ʉ́ ʉ̃ uu uũ ʉʉ ʉʉ̃ w</map>
+			</mappings>
+		</suggestions>
+		
+		<compounds>
+			<breakChars off="true"/>
+		</compounds>
+		
+		<affixes>
+			<!-- Contraction Rules -->
+			<prefix flag="CN">
+				<!-- Contract with bu, ka, ku, mu, ŋa, ya -->
+				<rule add="k'" where="a"/>
+				<rule add="ŋ'" where="a"/>
+				<rule add="y'" where="a"/>
+				<rule add="b'" where="u"/>
+				<rule add="k'" where="u"/>
+				<rule add="m'" where="u"/>
+				<!-- Contract with associative markers wa, wu, ba, mi, li, ma, ki, bvi, yi, bu -->
+				<rule add="w'" where="a"/>
+				<rule add="w'" where="u"/>
+				<rule add="b'" where="a"/>
+				<rule add="m'" where="i"/>
+				<rule add="l'" where="i"/>
+				<rule add="m'" where="a"/>
+				<rule add="k'" where="i"/>
+				<rule add="bv'" where="i"/>
+				<rule add="y'" where="i"/>
+				<rule add="b'" where="u"/>
+			</prefix>
+			
+			<!-- Noun class plural prefixes based on singular form of noun, e.g mbaa -> ambaa -->
+			<prefix flag="12">
+				<!-- Plurals -->
+				<rule add="a" remove="u" where="u" combineFlags="CN"/>
+				<rule add="a" remove="0" where="[^u]" combineFlags="CN"/>
+			</prefix>
+			<prefix flag="34">
+				<!-- Plurals -->
+				<rule add="i" remove="u" where="u" combineFlags="CN"/>
+				<rule add="i" remove="0" where="m" combineFlags="CN"/>
+			</prefix>
+			<prefix flag="56">
+				<!-- Plurals -->
+				<!-- i -> aN -->
+				<rule add="an" remove="i" where="i[kg]" combineFlags="CN"/>
+				<rule add="an" remove="i" where="ish" combineFlags="CN"/>
+				<rule add="an" remove="i" where="it[^s]" combineFlags="CN"/>
+				<rule add="an" remove="it" where="its" combineFlags="CN"/> <!-- its -> ans -->
+				<rule add="an" remove="i" where="id[^z]" combineFlags="CN"/>
+				<rule add="an" remove="id" where="idz" combineFlags="CN"/> <!-- idz -> anz -->
+				<rule add="am" remove="i" where="ib[^v]" combineFlags="CN"/>
+				<rule add="am" remove="ib" where="ibv" combineFlags="CN"/> <!-- ibv -> amv -->
+				<rule add="am" remove="i" where="ip[^f]" combineFlags="CN"/>
+				<rule add="am" remove="ip" where="ipf" combineFlags="CN"/> <!-- ipf -> amf -->
+				<!-- iN -> aN -->
+				<rule add="a" remove="i" where="i[mns]" combineFlags="CN"/> <!-- TODO: is the i[mns] correct? especially the s? -->
+				<!-- null -> a -->
+				<rule add="a" remove="0" where="[^i]" combineFlags="CN"/>
+				<!-- 5 can start with "li" instead of "i" in some dialects -->
+				<rule add="l"/>
+			</prefix>
+			<prefix flag="78">
+				<!-- Plurals -->
+				<rule add="i" remove="i" where="i" combineFlags="CN"/>
+			</prefix>
+			<prefix flag="96">
+				<!-- Plurals -->
+				<rule add="a" remove="0" where="[mnŋ]" combineFlags="CN"/>
+			</prefix>
+			<prefix flag="5a"> <!--  5/10 since "a" is hexadecimal for 10 -->
+				<!-- Plurals -->
+				<rule add="nz" remove="iy" where="iy" combineFlags="CN"/>
+				<rule add="nz" remove="liy" where="liy" combineFlags="CN"/>
+				<rule add="n" remove="i" where="is" combineFlags="CN"/>
+				<rule add="nd" remove="il" where="il" combineFlags="CN"/>
+				<rule add="n" remove="i" where="ik" combineFlags="CN"/>
+				<rule add="n" remove="i" where="it[^s]" combineFlags="CN"/>
+				<rule add="n" remove="it" where="its" combineFlags="CN"/>
+				<rule add="n" remove="i" where="id[^z]" combineFlags="CN"/>
+				<rule add="n" remove="it" where="idz" combineFlags="CN"/>
+				<rule add="m" remove="i" where="ip[^f]" combineFlags="CN"/>
+				<rule add="m" remove="ip" where="ipf" combineFlags="CN"/>
+				<rule add="m" remove="i" where="ib[^v]" combineFlags="CN"/>
+				<rule add="m" remove="ib" where="ibv" combineFlags="CN"/>
+				<rule add="m" remove="i" where="if" combineFlags="CN"/>
+				<!-- 5 can start with "li" instead of "i" in some dialects -->
+				<rule add="l"/>
+			</prefix>
+			<prefix flag="e4"> <!--  14/4 since "e" is hexadecimal for 14 -->
+				<!-- Plurals -->
+				<rule add="i" remove="u" where="u" combineFlags="CN"/>
+			</prefix>
+			<prefix flag="e6"> <!--  14/6 since "e" is hexadecimal for 14 -->
+				<!-- Plurals -->
+				<rule add="a" remove="u" where="u" combineFlags="CN"/>
+			</prefix>
+			<prefix flag="52">
+				<!-- Plurals -->
+				<rule add="a" combineFlags="CN"/>
+			</prefix>
+			<prefix flag="76">
+				<!-- Plurals -->
+				<rule add="i" remove="i" where="i" combineFlags="CN"/>
+			</prefix>
+			<prefix flag="92">
+				<!-- Plurals -->
+				<rule add="a" combineFlags="CN"/>
+			</prefix>
+			
+			<!-- Verb prefix and suffix rules -->
+			<!-- (V)erb (B)ase form includes aspect prefixes, and points to (sometimes required) subject prefixes in "Vb" -->
+			<prefix flag="VB">
+				<rule add="0" combineFlags="Vb CN"/> <!-- Base form of verb can occur by itself, or with a subject prefix -->
+				<rule add="baa" combineFlags="NA Vb CN"/>
+				<rule add="bu" combineFlags="NA Vb CN"/>
+				<rule add="ka" combineFlags="NA Vb CN"/>
+				<rule add="kâ" combineFlags="NA Vb CN"/>
+				<rule add="kaa" combineFlags="NA Vb CN"/>
+				<rule add="ma" combineFlags="NA Vb CN"/>
+				<rule add="maa" combineFlags="NA Vb CN"/>
+				<rule add="mu" combineFlags="NA Vb CN"/>
+				<rule add="yi" combineFlags="NA Vb CN"/>
+				<rule add="yika" combineFlags="NA Vb CN"/>
+			</prefix>
+			
+			<!-- (V)erb (b)ase form subject prefixes -->
+			<prefix flag="Vb">
+				<!-- Null prefix -->
+				<rule add="0"/> <!-- 2nd singular prefix, for example -->
+			
+				<!-- Infinitive -->
+				<rule add="u"/>
+					<!-- Contractions -->
+					<rule add="b'u"/>
+					<rule add="k'u"/>
+					<rule add="m'u"/>
+				
+				<!-- Series 1 -->
+				<rule add="i"/>
+					<!-- Contractions -->
+					<rule add="bv'i"/>
+					<rule add="k'i"/>
+					<rule add="l'i"/>
+					<rule add="m'i"/>
+					<rule add="y'i"/>
+				<rule add="a"/>
+					<!-- Contractions -->
+					<rule add="b'a"/>
+					<rule add="k'a"/>
+					<rule add="m'a"/>
+					<rule add="ŋ'a"/>
+					<rule add="w'a"/>
+					<rule add="y'a"/>
+				<rule add="li"/>
+
+				<!-- TODO: Do these need to have contraction rules added? -->
+				<rule add="í"/>
+				<rule add="á"/>
+				<rule add="lí"/>
+				<rule add="ú"/>
+							
+				<!-- Series 2 -->
+				<rule add="ii"/>
+					<!-- Contractions -->
+					<rule add="bv'ii"/>
+					<rule add="k'ii"/>
+					<rule add="l'ii"/>
+					<rule add="m'ii"/>
+					<rule add="y'ii"/>
+				<rule add="aa"/>
+					<!-- Contractions -->
+					<rule add="b'aa"/>
+					<rule add="k'aa"/>
+					<rule add="m'aa"/>
+					<rule add="ŋ'aa"/>
+					<rule add="w'aa"/>
+					<rule add="y'aa"/>
+				<rule add="lii"/>
+				<rule add="uu"/>
+					<!-- Contractions -->
+					<rule add="b'uu"/>
+					<rule add="k'uu"/>
+					<rule add="m'uu"/>
+				
+				<!-- Series 3 rules not in Series 1 or 2 -->
+				<rule add="m" remove="0" where="[pbw]"/>
+				<rule add="n" remove="0" where="[dtsykg]"/>
+				<rule add="nd" remove="l" where="[l]"/>
+							
+				<!-- Series 4 rules not in Series 1, 2, or 3 -->
+				<rule add="um" remove="0" where="[pbw]"/>
+					<!-- Contractions -->
+					<rule add="b'um" remove="0" where="[pbw]"/>
+					<rule add="k'um" remove="0" where="[pbw]"/>
+					<rule add="m'um" remove="0" where="[pbw]"/>
+				<rule add="un" remove="0" where="[dtsykg]"/>
+					<!-- Contractions -->
+					<rule add="b'un" remove="0" where="[dtsykg]"/>
+					<rule add="k'un" remove="0" where="[dtsykg]"/>
+					<rule add="m'un" remove="0" where="[dtsykg]"/>
+				<rule add="und" remove="l" where="[l]"/>
+					<!-- Contractions -->
+					<rule add="b'und" remove="l" where="[l]"/>
+					<rule add="k'und" remove="l" where="[l]"/>
+					<rule add="m'und" remove="l" where="[l]"/>
+			</prefix>
+			
+			<!-- (V)erb (M)odified form subject prefixes -->
+			<prefix flag="VM">
+
+				<!-- Series 1 -->
+				<rule add="i" combineFlags="CN"/>
+				<rule add="a" combineFlags="CN"/>
+				<rule add="li" combineFlags="CN"/>
+				<rule add="u" combineFlags="CN"/>
+				
+				<rule add="í" combineFlags="CN"/>
+				<rule add="á" combineFlags="CN"/>
+				<rule add="lí" combineFlags="CN"/>
+				<rule add="ú" combineFlags="CN"/>
+
+				<!-- Series 3 rules not in Series 1 -->
+				<rule add="m" remove="0" where="[pbw]" combineFlags="CN"/>
+				<rule add="n" remove="0" where="[dtsykg]" combineFlags="CN"/>
+				<rule add="nd" remove="l" where="[l]" combineFlags="CN"/>
+			</prefix>
+			
+			<!-- Pronoun suffixes -->
+			<!-- (EM)phatic forms -->
+			<suffix flag="EM">
+				<rule add="mɛ" remove="̃" where="̃"/> <!-- remove tilde from 1S mɛ̃ -->
+				<rule add="-mɛmɛ" remove="0" where="bɨ"/> <!-- special form for 1P bɨ -->
+				<rule add="mɛ" remove="0" where="[^̃i]"/> <!-- mɛ after anything but tilde or barred i -->
+			</suffix>
+			
+			<!-- Near/Far demonstrative (pronoun/adjective) -->
+			<!-- emphatic forms (D)emonstrative (S)uffix -->
+			<suffix flag="DS">
+				<rule add="bu"/> <!-- Near emphatic -->
+				<rule add="ŋa"/> <!-- Near emphatic -->
+				<rule add="ku"/> <!-- Far emphatic -->
+				<rule add="na"/> <!-- adjective "other" -->
+				<rule add="mwɔ̃"/> <!-- adjective "other" -->
+				<rule add="kyɛ"/> <!-- adjective "other" -->
+				<rule add="ni"/> <!-- interrogative adjective "which" -->
+				
+				<rule add="li" where="[^a]"/> <!-- relative pronoun negative/emphatic form (excludes attachment to ba & ma) -->
+				<rule add="li" where="ba"/> <!-- relative pronoun negative/emphatic form, attach to ba -->
+			</suffix>
+			
+			<!-- voici/voila forms for (D)emonstrative (P)refixies -->
+			<prefix flag="DP">
+				<!-- Are both of these rules correct? -->
+				<rule add="nga"/> <!-- Voici/Voila -->
+				<rule add="nga-"/> <!-- Voici/Voila -->
+			</prefix>
+			
+			<!-- (d)emonstrative (s)uffix for voici/voila forms -->
+			<suffix flag="ds">
+				<rule add="bu"/> <!-- Voici -->
+				<rule add="bwaɔ̃"/> <!-- Voila -->
+			</suffix>
+			
+			<!-- (d)emonstrative (p)refix -->
+			<prefix flag="dp">
+				<rule add="a"/>
+			</prefix>
+			
+			<!-- declinable (A)d(J)ective prefixes -->
+			<prefix flag="AJ">
+				<rule add="a" remove="u" where="u"/>
+				<rule add="i" remove="u" where="u"/>
+				<rule add="m" remove="u" where="ub[^v]"/>
+				<rule add="m" remove="ub" where="ubv"/>
+				<rule add="m" remove="u" where="up[^f]"/>
+				<rule add="m" remove="upf" where="upf"/>
+				<rule add="0" remove="u" where="u[nmŋ]"/>
+				<rule add="n" remove="u" where="u[gk]"/>
+				<rule add="n" remove="u" where="ud[^z]"/>
+				<rule add="n" remove="ud" where="udz"/>
+				<rule add="n" remove="u" where="ut[^s]"/>
+				<rule add="n" remove="ut" where="uts"/>
+				<rule add="nd" remove="ul" where="ul"/>
+				<rule add="0" remove="u" where="un"/>
+			</prefix>
+			
+			<!-- (D)eictic (R)eference form -->
+			<prefix flag="DR">
+				<rule add="ngoo" remove="u" where="u"/>
+				<rule add="ngaa" remove="a" where="a"/>
+				<rule add="ngee" remove="i" where="i"/>
+				<rule add="nga-"/>
+			</prefix>
+			
+			<!-- numeric plural adjectives (3, 4, 5, 6) -->
+			<prefix flag="##">
+				<rule add="a"/>
+				<rule add="i"/>
+			</prefix>
+			
+			<!-- numeric adjectives for #1 -->
+			<prefix flag="#1">
+				<rule add="ngaa" remove="ngoo" where="ngoo"/>
+				<rule add="ngali" remove="ngoo" where="ngoo"/>
+				<rule add="ngee" remove="ngoo" where="ngoo"/>
+			</prefix>
+		</affixes>
+	</affixFile>
+	
+
+	<dictionaryFile>
+		<include file="ebo_CG_input.dic" />
+		<include file="fr_FR_names.dic" />
+	</dictionaryFile>
+	
+	<!-- Tests of "hand-crafted" words -->
+	<tests>
+	<!-- adjective class agreement -->
+	<good>
+	ubvyɛ abvyɛ ibvyɛ mvyɛ
+	ubi abi ibi mbi
+	ula ala ila nda
+	upfi apfi ipfi mfi
+	utsiina itsiina nsiina atsiina
+	ubɨ abɨ ibɨ mbɨ
+	ubɨa ibɨa abɨa mbɨa
+	udzũ adzũ idzũ nzũ
+	ukuli akuli ikuli nkuli
+	ukyɔ̃ akyɔ̃ ikyɔ̃ nkyɔ̃
+	ulɔ alɔ ilɔ ndɔ
+	uma ama ima ma
+	umwɔ̃ amwɔ̃ imwɔ̃ mwɔ̃
+	unyini anyini inyini nyini
+	upfi apfi ipfi mfi
+	utsiina atsiina itsiina nsiina
+	</good>
+
+	<!-- adjective class agreement forms of "a lot of" -->
+	<good>
+	wu alɔ alɔ
+	ba alɔ      b’alɔ  alɔ
+	wu alɔ alɔ
+	mi ilɔ      m’ilɔ ilɔ
+	li ilɔ        l’ilɔ ilɔ
+	ma alɔ     m’alɔ alɔ
+	ki ilɔ       k’ilɔ ilɔ
+	bvi ilɔ     bv’ilɔ ilɔ
+	yi ilɔ       y’ilɔ ilɔ
+	yi ilɔ       y’ilɔ ilɔ
+	ba ulɔ ulɔ
+	</good>
+	
+	<!-- adjective class agreement for here, there, reference form -->
+	<good>
+	ngawu ndyɛbu ngawaɔ̃  ndyɛbwaɔ̃ ngoondyɛ
+	ngaba bwɔbu ngabaɔ̃ bwɔbwaɔ̃ ngaabwɔ
+	ngawu ndyɛbu ngawaɔ̃  ndyɛbwaɔ̃ ngoondyɛ
+	ngami myɛbu ngamyaɔ̃ myɛbwaɔ̃ ngeemyɛ
+	ngali lwɔbu ngalyaɔ̃ lwɔbwaɔ̃ ngeelwɔ
+	ngama mwɔbu ngamaɔ̃  mwɔbwaɔ̃ ngaamwɔ̃
+	ngaki kyɛbu ngakyaɔ̃  kyɛbwaɔ̃ ngeekyɛ
+	ngabvi bvyɛbu ngabvyaɔ̃ bvyɛbwaɔ̃  ngeebvyɛ
+	ngayi ywɔbu ngayaɔ̃ ywɔbwaɔ̃ ngeeywɔ
+	ngayi ywɔbu ngayaɔ̃  ywɔbwaɔ̃ ngeeywɔ
+	ngaba bwɔbu ngabaɔ̃ bwɔbwaɔ̃ ngoobwɔ
+	</good>
+	
+	<!-- adjective class agreement for all/whole, same, other -->
+	<good>
+	wue wuuna wuna wumwɔ̃ wukyɛ ukyɔ̃ 
+	bue baana bana bamwɔ̃ bakyɛ akyɔ̃
+	wue wuuna wuna wumwɔ̃ wukyɛ ukyɔ̃
+	mie miina mina mimwɔ̃ mikyɛ ikyɔ̃
+	lue liina lina limwɔ̃ likyɛ ikyɔ̃
+	mue maana mana mamwɔ̃ makyɛ akyɔ̃
+	kie kiina kina kimwɔ̃ kikyɛ ikyɔ̃
+	bvie bviina bvina bvimwɔ̃ bvikyɛ ikyɔ̃
+	yue yiina yina yimwɔ̃ yikyɛ nkyɔ̃
+	yue yiina yina yimwɔ̃ yikyɛ nkyɔ̃
+	bue baana bana bamwɔ̃ bakyɛ ukyɔ̃
+	</good>
+	
+	<!-- personal pronouns, emphatic forms -->
+	<good>
+	mɛ̃ mɛmɛ
+	wɛ wɛmɛ
+	ndyɛ ndyɛmɛ
+	bɨ bɨ-mɛmɛ
+	byɛ byɛmɛ
+	bwɔ bwɔmɛ
+
+	ndyɛ ndyɛmɛ
+	bwɔ bwɔmɛ
+	ndyɛ ndyɛmɛ
+	myɛ myɛmɛ
+	lwɔ lwɔmɛ
+	mwɔ mwɔmɛ
+	kyɛ kyɛmɛ
+	bvyɛ bvyɛmɛ
+	ywɔ ywɔmɛ
+	ywɔ ywɔmɛ
+	bwɔ bwɔmɛ
+	</good>
+
+	<!-- demonstrative ; emphatic demonstratives ; reference demonstratives -->
+	<good>
+	wu	waɔ̃	wubu	wuku	undyɛ
+	ba	baɔ̃	babu	baku	abwɔ
+	wu	waɔ̃	wubu	wuku	undyɛ
+	mi	myaɔ̃	mibu	miku	imyɛ̃
+	li	lyaɔ̃	libu	liku	ilwɔ
+	ma	maɔ̃	mabu	maku	amwɔ̃
+	ki	kyaɔ̃	kibu	kiku	ikyɛ
+	bvi	bvyaɔ̃	bvibu	bviku	ibvyɛ
+	yi	yaɔ̃	yibu	yiku	iywɔ
+	yi	yaɔ̃	yibu	yiku	iywɔ
+	ba	baɔ̃	babu	baku	ubwɔ
+	</good>
+
+	<!-- associative / possessive particle -->
+	<good>
+	a wa
+	a ba
+	a wa
+	i mi
+	i li
+	a ma
+	i ki
+	i bvi
+	a yi
+	a yi
+	u bau bo
+	</good>
+
+	<!-- number class agreement 1 - 6 -->
+	<good>
+	umwɔ̃ bwɔɔlɛ atyeri ana ataani ashɔɔnɔ
+	umwɔ̃ myɛɛlɛ ityeri ina itaani ishɔɔnɔ
+	imwɔ̃ mwɔɔlɛ atyeri ana ataani ashɔɔnɔ
+	imwɔ̃ bvyɛɛlɛ ityeri ina itaani ishɔɔnɔ
+	amwɔ̃ mwɔ̃ ywɔɔlɛ tyeri na taani shɔɔnɔ
+	umwɔ̃ 
+	</good>
+	
+	<!-- quantifier class agreement for one/a certain, certain/some, all the -->
+	<good>
+	ngoomwɔ̃  amwɔ̃ ngaamwɔ̃ ngalimwɔ̃ banza
+	ngoomwɔ̃ imwɔ̃ ngeemwɔ̃ minza
+	ngeemwɔ̃ amwɔ̃ ngaamwɔ̃ ngalimwɔ̃ manza
+	ngeemwɔ̃ imwɔ̃ ngeemwɔ̃ bvinza
+	ngaamwɔ̃ ngalimwɔ̃ amwɔ̃ ngaamwɔ̃ ngalimwɔ̃ yinza
+	ngoomwɔ̃ 
+	</good>
+	
+	<!-- nouns with irregular plural formation -->
+	<good>
+	mbuuru baari
+	mwaana baana
+	dziini miini
+	dzɨ mwɨ
+	kuuli miili
+	</good>
+
+	<!-- a few tests of contraction rules -->
+	<good>
+	k’ula
+	y’ayɛlɛ
+	m’utsa
+	K’apala wɔ
+	baari b’alɔ
+	laari l’ili mɛ̃
+	</good>
+	</tests>
+	
+
+	<metadata>
+		<languageName>Teke-Plateaux (Eboo)</languageName>
+		<localeList>ebo_CG</localeList>
+		<dictionaryName>Teke-Plateaux (Eboo) Dictionary</dictionaryName>
+		<filename>ebo_CG</filename>
+		<filepath>ebo_CG</filepath>
+		<version>1.0</version>
+		<license>Licensed under Creative Commons Attribution Share-Alike 3.0 by SIL-Congo.</license>
+		<readme>No readme</readme>
+		<description>Spell-check dictionary for the Teke-Plateaux (Eboo) language in Congo.</description>
+		<shortDescription>Teke-Plateaux Dictionary</shortDescription>
+		<creator>Jeremy Brown</creator>
+		<contributors>
+			<name>Ruth Raharimanantsoa</name>
+			<name>Basile Okana</name>
+		</contributors>
+		<webpage>None</webpage>
+		<firefoxVersion min="0" max="100"/>
+		<thunderbirdVersion min="0" max="100"/>
+	</metadata>
+</hunspell>
