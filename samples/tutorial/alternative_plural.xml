@@ -1,0 +1,75 @@
+<hunspell>
+	<affixFile>
+		<settings>
+			<languageCode>eng_US</languageCode>
+			<characterSet>UTF-8</characterSet>
+			<flagType>long</flagType>
+		</settings>
+		
+		<affixes>
+			<suffix flag="PS">
+				<rule add="s"/>
+			</suffix>
+			<suffix flag="PE">
+				<rule add="es"/>
+			</suffix>
+			<suffix flag="PI">
+				<rule remove="y" add="ies"/>
+			</suffix>
+		</affixes>
+	</affixFile>
+	
+
+	<dictionaryFile>
+		<!-- List of nouns with plurals in -s -->
+		<words flags="PS">
+		cat
+		cow
+		dog
+		frog
+		horse
+		jay
+		monkey
+		moth		
+		</words>
+		<!-- List of nouns with plurals in -es -->
+		<words flags="PE">
+		fish
+		fox
+		walrus
+		</words>
+		<!-- List of nouns with plurals in -ies -->
+		<words flags="PI">
+		bunny
+		butterfly
+		fly
+		pony
+		puppy
+		</words>
+		<!-- List of irregular nouns and their plurals -->
+		<words>
+		goose
+		geese
+		moose
+		mouse
+		mice
+		ox
+		oxen
+		</words>
+	</dictionaryFile>
+	
+	<tests>
+		<!-- Regular plural -s -->
+		<good>cats cows dogs frogs monkeys moths</good>
+		<bad>caties cowen froges monkies gooses mooses mouses walruss</bad>
+		<!-- plural in -es -->
+		<good>fishes foxes walruses</good>
+		<bad>horsees fishs foxs mothes oxs</bad>
+		<!-- plural in -ies -->
+		<good>bunnies butterflies flies ponies puppies</good>
+		<bad>cowies monkies monkeies mousies</bad>
+		<!-- irregular plurals -->
+		<good>geese mice oxen</good>
+		<bad>gooses mouses oxes foxen meese</bad>
+	</tests>
+</hunspell>

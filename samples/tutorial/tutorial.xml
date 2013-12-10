@@ -1,0 +1,67 @@
+<hunspell>
+	<affixFile>
+		<settings>
+			<languageCode>eng_US</languageCode>
+			<characterSet>UTF-8</characterSet>
+			<flagType>long</flagType>
+		</settings>
+		
+		<affixes>
+			<suffix flag="NP">
+				<rule where="[cs]h" add="es" />
+				<rule where="[sxz]" add="es" />
+				<rule where="[^aeiou]y" remove="y" add="ies" />
+				<rule where="[^hsxyz]" add="s" />
+				<rule where="[^cs]h" add="s" />
+				<rule where="[aeiou]y" add="s"/>
+			</suffix>
+		</affixes>
+	</affixFile>
+	
+
+	<dictionaryFile>
+		<words flags="NP">
+		bunny
+		butterfly
+		cat
+		cow
+		dog
+		fish
+		fly
+		frog
+		fox
+		horse
+		jay
+		monkey
+		moth
+		pony
+		puppy
+		walrus
+		</words>
+		<!-- List of irregular nouns and their plurals -->
+		<words>
+		goose
+		geese
+		moose
+		mouse
+		mice
+		ox
+		oxen
+		</words>
+	</dictionaryFile>
+	
+	<tests>
+		<!-- Regular plural -s -->
+		<good>cats cows dogs frogs monkeys moths</good>
+		<bad>caties cowen froges monkies gooses mooses mouses walruss</bad>
+		<!-- plural in -es -->
+		<good>fishes foxes walruses</good>
+		<bad>horsees fishs foxs mothes oxs</bad>
+		<!-- plural in -ies -->
+		<good>bunnies butterflies flies ponies puppies</good>
+		<bad>cowies monkies monkeies mousies</bad>
+		<!-- irregular plurals -->
+		<good>geese mice oxen</good>
+		<bad>gooses mouses oxes foxen meese</bad>
+	</tests>
+</hunspell>
