@@ -1,0 +1,135 @@
+<hunspell>
+	<affixFile>
+		<settings>
+			<languageCode>eng_US</languageCode>
+			<characterSet>UTF-8</characterSet>
+			<flagType>long</flagType>
+		</settings>
+		
+		<affixes>
+			<suffix flag="NP">
+				<rule where="[cs]h" add="es" combineFlags="PP"/>
+				<rule where="[sxz]" add="es" combineFlags="PP"/>
+				<rule where="[^aeiou]y" remove="y" add="ies" combineFlags="PP"/>
+				<rule where="[^hsxyz]" add="s" combineFlags="PP"/>
+				<rule where="[^cs]h" add="s" combineFlags="PP"/>
+				<rule where="[aeiou]y" add="s" combineFlags="PP"/>
+			</suffix>
+			
+			<suffix flag="SP">
+				<rule add="'s"/>
+			</suffix>
+			<suffix flag="PP">
+				<rule where="s" add="'"/>
+				<rule where="[^s]" add="'s"/>
+			</suffix>
+			
+			<suffix flag="VB">
+				<!-- Rules for 3rd Singular -s/-es/-ies -->
+				<rule where="[cs]h" add="es"/>
+				<rule where="[sxz]" add="es"/>
+				<rule where="[^aeiou]y" remove="y" add="ies"/>
+				<rule where="[^hsxyz]" add="s"/>
+				<rule where="[^cs]h" add="s"/>
+				<rule where="[aeiou]y" add="s"/>
+				
+				<!-- Rules for Past -->
+				<rule where="[^aeiou]y" remove="y" add="ied"/>
+				<rule where="[aeiou]y" add="ed"/>
+				<rule where="e" add="d"/>
+				<rule where="[^ey]" add="ed"/>
+
+				<!-- Rules for Gerund -->
+				<rule where="e" remove="e" add="ing"/>
+				<rule where="[^e]" add="ing"/>
+			</suffix>
+			
+			<suffix flag="BL" cross="true">
+				<rule where="[^aeiou]y" remove="y" add="iable" combineFlags="UN"/>
+				<rule where="[aeiou]y" add="able" combineFlags="UN"/>
+				<rule where="e" remove="e" add="able" combineFlags="UN"/>
+				<rule where="[^ey]" add="able" combineFlags="UN"/>
+			</suffix>
+			
+			<prefix flag="UN" cross="true">
+				<rule add="un"/>
+			</prefix>
+		</affixes>
+	</affixFile>
+	
+
+	<dictionaryFile>
+		<words flags="NP SP">
+		bunny
+		butterfly
+		cat
+		cow
+		dog
+		fish
+		fly
+		frog
+		fox
+		horse
+		jay
+		monkey
+		moth
+		pony
+		puppy
+		walrus
+		</words>
+		<!-- List of irregular singular nouns -->
+		<words flags="SP">
+		goose
+		moose
+		mouse
+		ox
+		</words>
+		<!-- List of irregular plural nouns -->
+		<words flags="PP">
+		geese
+		moose
+		mice
+		oxen
+		</words>
+		<!-- List of basic regular verbs -->
+		<words flags="VB BL">
+		add
+		subtract
+		multiply
+		divide
+		array
+		match
+		push
+		amass
+		</words>
+	</dictionaryFile>
+	
+	<tests>
+		<!-- Regular plural -s -->
+		<good>cats cows dogs frogs monkeys moths</good>
+		<bad>caties cowen froges monkies gooses mooses mouses walruss</bad>
+		<!-- plural in -es -->
+		<good>fishes foxes walruses</good>
+		<bad>horsees fishs foxs mothes oxs</bad>
+		<!-- plural in -ies -->
+		<good>bunnies butterflies flies ponies puppies</good>
+		<bad>cowies monkies monkeies mousies</bad>
+		<!-- irregular plurals -->
+		<good>geese mice oxen</good>
+		<bad>gooses mouses oxes foxen meese</bad>
+		<!-- possessives -->
+		<good>dog's fox's walrus's cats' fox's foxes' walruses' goose's geese's mice's oxen's</good>
+		<bad>dog' walrus' fox' goose' geese' mices' oxens'</bad>
+		<!-- Regular verbs -->
+		<good>add adds adding added subtract subtracts subtracted subtracting</good>
+		<good>multiply multiplies multiplied multiplying divide divides divided dividing</good>
+		<good>array arrays arrayed arraying match matches matched matching</good>
+		<good>push pushes pushed pushing amass amasses amassed amassing</good>
+		<bad>addes addd subtractd multiplys multiplyd multipling divids dividd divideing</bad>
+		<bad>arrayes arraies arrayd arraied matchs matchd</bad>
+		<bad>pushs pushd amasss amassd</bad>
+		<!-- Un-verb-able tests -->
+		<good>addable multipliable arrayable unpushable unmatchable undividable unamassable unsubtractable unarrayable unmultipliable</good>
+		<bad>unadd unpush multiplyable undivideable arraiable</bad>
+	</tests>
+</hunspell>
