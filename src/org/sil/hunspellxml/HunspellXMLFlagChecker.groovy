@@ -53,7 +53,8 @@ class HunspellXMLFlagChecker
 		def (normals, specials) = extractSpecialFlags(flag)
 		for(normal in normals)
 		{
-			def flagPath = HunspellXMLFlagPath.createWord(word, normal, specials)
+			def flagPath = HunspellXMLFlagPath.createWord(word, normal, normals, specials)
+			log.info(flagPath)
 			assignSpecialFlags(flagPath, specials)
 			def flagPathS = flagPath.toString()
 			if(!flagMap.containsKey(flagPathS)){flagMap[flagPathS] = flagPath}
@@ -61,7 +62,7 @@ class HunspellXMLFlagChecker
 		}
 		if(!normals) //only special flags present
 		{
-			def flagPath = HunspellXMLFlagPath.createWord(word, "", specials)
+			def flagPath = HunspellXMLFlagPath.createWord(word, "", [], specials)
 			flagPath.special = true
 			assignSpecialFlags(flagPath, specials)
 			//log.info("word with no normal affix flags, only specials...: " + flagPath)
@@ -102,8 +103,8 @@ class HunspellXMLFlagChecker
 		for(normal in normals)
 		{
 			def flagPath
-			if(type == "prefix"){flagPath = HunspellXMLFlagPath.createPrefixContinuation(normal, specials, parent.cross)}
-			else{flagPath = HunspellXMLFlagPath.createSuffixContinuation(normal, specials, parent.cross)}
+			if(type == "prefix"){flagPath = HunspellXMLFlagPath.createPrefixContinuation(normal, normals, specials, parent.cross)}
+			else{flagPath = HunspellXMLFlagPath.createSuffixContinuation(normal, normals, specials, parent.cross)}
 			assignSpecialFlags(flagPath, specials)
 						
 			parent.addBranch(flagPath)
@@ -153,9 +154,21 @@ class HunspellXMLFlagChecker
 	
 	def traceFlagPaths(HunspellXMLFlagPath flagPath, int level, boolean target, List route)
 	{
+		//TODO: trigger prefix and suffix rule from same node
+		/*
+		When the circumfix tag is present, always add the contrafix first, followed by doubleCross continuation, followed by original target
+		As done for cross-products in extractCrossMultiplyFlags()
+		*/
+		
+		//Level represents the number of suffixes, maximum of 3 in a valid Hunspell path
 		if(level > 3){return}
+		
+		//Target (node) or continuation (link).
 		if(target)
 		{
+			//If there is no flagPath passed in (null), 
+			//either add the terminalFlagPath at the end (only special flags in the continuation flagPath), 
+			//or add the missingFlagPath to signal an error (missing an affix rule target)
 			if(!flagPath)
 			{
 				if(route.size() > 0 && route[-1].special)
@@ -170,9 +183,15 @@ class HunspellXMLFlagChecker
 					if(!flagMap.containsKey(flagPath.toString())){flagMap[flagPath.toString()] = flagPath}
 				}
 			}
+			
 			def branches = flagPath.branches
 			if(branches)
 			{
+				//For each branch in flagPath.branches, 
+				//1. add that flagPath to route,
+				//2. add that route to the checked routes in checkMap
+				//3. recurse to traceFlagPaths with this branch, increasing the level, false signals a non-target (i.e. a continuation link)
+				//4. pop this flagPath off of the route list so we can continue with the next route in the branch, etc.
 				for(branch in flagPath.branches)
 				{
 					route << flagPath
@@ -184,6 +203,10 @@ class HunspellXMLFlagChecker
 			}
 			else
 			{
+				//If there aren't any branches
+				//1. add the flagPath to route 
+				//2. add the route to the checked routes in checkMap
+				//3. then pop the flagPath off of the route list so we can continue in the next lower level of recursion
 				route << flagPath
 				addCheckedRoute(route)
 				//log.info(route.join(" => "))
@@ -197,9 +220,71 @@ class HunspellXMLFlagChecker
 			route << flagPath
 			//log.info(route.join(" => "))
 			traceFlagPaths(targetPath, level, true, route)
+			
+			//Handle cross-multiplying prefix and suffix
+			def crossFlagPathList = extractCrossMultiplyFlags(route[-1])
+			log.info(crossFlagPathList.collect{"==> " + it.toString()}.join("\r\n"))
+			for(newBranch in crossFlagPathList)
+			{
+				//Try each of the cross-multiply branches. Add 3 pieces onto route: the first affix, the doubleCross continuation, and the second affix.
+				//Have to increase the level by one since two affixes are being attached.
+				route << newBranch[0]
+				route << newBranch[1]
+				//route << newBranch[2]
+				log.info("adding doubleCross route: \r\n" + route.join("\r\n"))
+				addCheckedRoute(route)
+				traceFlagPaths(newBranch[2], level+1, true, route)
+				//route.pop()
+				route.pop()
+				route.pop()
+			}
+			
 			route.pop()
+			
 			return
 		}
+	}
+	
+	def extractCrossMultiplyFlags(HunspellXMLFlagPath continuation)
+	{
+		def prefixList = [] //hold prefix targets with cross==true
+		def suffixList = [] //hold suffix targets with cross==true
+
+		//Find all the prefix and suffix targets that have cross==true
+		for(flag in continuation.combineFlags)
+		{
+			def targetPath = affixTargetMap[flag]
+			if(targetPath && targetPath.cross)
+			{
+				if(targetPath.prefix){prefixList << targetPath}
+				else if(targetPath.suffix){suffixList << targetPath}
+			}
+		}
+		
+		//Return a list of all the cross-products of prefix + suffix
+		def comboList = []
+		for(p in prefixList)
+		{
+			for(s in suffixList)
+			{
+				//If complexPrefixes is true, the suffix should be added first, followed by the doubleCross continuation, followed by the prefix
+				if(complexPrefixes)
+				{
+					//Leave the "special flags" list blank. No special flags apply on the first affix added
+					def link = HunspellXMLFlagPath.createCrossContinuation(s.flag, [p.flag], [], s.cross)
+					comboList << [s, link, p]
+				}
+				//If complexPrefixes is false, the prefix should be added first, followed by the doubleCross continuation, followed by the suffix
+				else
+				{
+					//Leave the "special flags" list blank. No special flags apply on the first affix added
+					def link = HunspellXMLFlagPath.createCrossContinuation(p.flag, [s.flag], [], p.cross)
+					comboList << [p, link, s]
+				}
+			}
+		}
+		
+		return comboList
 	}
 	
 	def extractSpecialFlags(String flags)
@@ -593,9 +678,18 @@ class HunspellXMLFlagChecker
 						sb << " "
 					}
 				}
-				sb << "--"
-				if(flagPath.specialFlags){sb << "{" + flagPath.specialFlags.join(",") + "}"}
-				sb << "-->  "
+				if(flagPath.doubleCross)
+				{
+					sb << "xx"
+					if(flagPath.specialFlags){sb << "{" + flagPath.specialFlags.join(",") + "}"}
+					sb << "xx>  "
+				}
+				else
+				{
+					sb << "--"
+					if(flagPath.specialFlags){sb << "{" + flagPath.specialFlags.join(",") + "}"}
+					sb << "-->  "
+				}
 			}
 			else //target
 			{

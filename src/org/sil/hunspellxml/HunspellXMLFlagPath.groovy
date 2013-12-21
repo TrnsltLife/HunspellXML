@@ -10,6 +10,7 @@ class HunspellXMLFlagPath
 	public static final String SUFFIXTARGET = "suffix"
 	public static final String PREFIXCONTINUATION = "prefixContinuation"
 	public static final String SUFFIXCONTINUATION = "suffixContinuation"
+	public static final String CROSSCONTINUATION = "crossContinuation"
 	public static final String SPECIALCONTINUATION = "specialContinuation"
 	public static final String TERMINALTARGET = "terminal"
 	
@@ -18,12 +19,14 @@ class HunspellXMLFlagPath
 	List<HunspellXMLFlagPath> branches = []
 	String type
 	List<String> specialFlags = []
+	List<String> combineFlags = []
 	boolean missing = false
 	boolean continuation = false
 	boolean target = false
 	boolean prefix = false
 	boolean suffix = false
 	boolean cross = false
+	boolean doubleCross = false
 	boolean special = false
 	boolean terminal = false
 	boolean needaffix = false
@@ -44,13 +47,14 @@ class HunspellXMLFlagPath
 		return flagPath
 	}
 	
-	public static createWord(String word, String flag, List specialFlags)
+	public static createWord(String word, String flag, List combineFlags, List specialFlags)
 	{
 		def flagPath = new HunspellXMLFlagPath(flag)
 		flagPath.word = word
 		flagPath.type = WORD
 		flagPath.continuation = true
 		flagPath.specialFlags = specialFlags
+		flagPath.combineFlags = combineFlags
 		return flagPath
 	}
 	
@@ -74,22 +78,36 @@ class HunspellXMLFlagPath
 		return flagPath
 	}
 	
-	public static createPrefixContinuation(String flag, List specialFlags, boolean cross)
+	public static createPrefixContinuation(String flag, List combineFlags, List specialFlags, boolean cross)
 	{
 		def flagPath = new HunspellXMLFlagPath(flag)
 		flagPath.type = PREFIXCONTINUATION
 		flagPath.continuation = true
 		flagPath.specialFlags = specialFlags
+		flagPath.combineFlags = combineFlags
 		flagPath.cross = cross
 		return flagPath
 	}
 	
-	public static createSuffixContinuation(String flag, List specialFlags, boolean cross)
+	public static createSuffixContinuation(String flag, List combineFlags, List specialFlags, boolean cross)
 	{
 		def flagPath = new HunspellXMLFlagPath(flag)
 		flagPath.type = SUFFIXCONTINUATION
 		flagPath.continuation = true
 		flagPath.specialFlags = specialFlags
+		flagPath.combineFlags = combineFlags
+		flagPath.cross = cross
+		return flagPath
+	}
+	
+	public static createCrossContinuation(String flag, List combineFlags, List specialFlags, boolean cross)
+	{
+		def flagPath = new HunspellXMLFlagPath(flag)
+		flagPath.type = CROSSCONTINUATION
+		flagPath.continuation = true
+		flagPath.doubleCross = true
+		flagPath.specialFlags = specialFlags
+		flagPath.combineFlags = combineFlags
 		flagPath.cross = cross
 		return flagPath
 	}
@@ -128,6 +146,6 @@ class HunspellXMLFlagPath
 	
 	public String toString()
 	{
-		return "$type($flag, X:$cross, $specialFlags, NA:$needaffix, CF:$circumfix, FB:$forbidden)"
+		return "$type($flag, N:$combineFlags, S:$specialFlags, X:$cross, NA:$needaffix, CF:$circumfix, FB:$forbidden)"
 	}
 }
