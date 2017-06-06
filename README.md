@@ -7,4 +7,4 @@ Visit the [wiki](https://github.com/TrnsltLife/HunspellXML/wiki) for more inform
 
 You can download hunspell-xml-[version].jar from the [HunspellXML project on Google Code](https://code.google.com/p/hunspellxml/downloads/list).
 
-![HunspellXML](https://hunspellxml.googlecode.com/files/HX-Splash.png)
+![HunspellXML](https://user-images.githubusercontent.com/280842/26846538-ce479496-4aae-11e7-95a1-98b8ff576987.png)
