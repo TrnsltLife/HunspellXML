@@ -439,7 +439,9 @@ HunspellXML [Optional Flags] [Output Suppression] [Processing Options] hunspell_
 -o=filename.xml    Filename for exporting HunspellXML file, e.g. path/to/en_US.xml
 -oc=output-charset Convert output to this Hunspell character set
 -dc=charset        Default charset for reading and exporting if none is 
-                      specified in the .aff file.
+                      specified in the .aff file. Valid charsets are:
+                      [UTF-8, ISO8859-1 to ISO8859-10, ISO8859-13 to ISO8859-15, 
+                      KOI8-R, KOI8-U, microsoft-cp1251, ISCII-DEVANAGARI]
 -df=flag-type      Default flag type if none is specified in the .aff file.
                       [short, long, UTF-8, num]
 -dl=lang_code      Default language code if none is specified in the .aff file, e.g. en_US, fr_FR
