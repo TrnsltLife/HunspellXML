@@ -9,6 +9,6 @@ def cli(command)
 }
 def del(files) {files.each{file-> new File(file).delete()}}
 	
-cli("-hs -ts -rt -o=${dir}/words ${dir}/words.xml")
-del(["$dir/words.aff", "$dir/words.dic", "$dir/words.good", "$dir/words.wrong"])
+cli("-hs -ts -rt -o=${dir}/wordsFlagsMorph ${dir}/wordsFlagsMorph.xml")
+del(["$dir/wordsFlagsMorph.aff", "$dir/wordsFlagsMorph.dic", "$dir/wordsFlagsMorph.good", "$dir/wordsFlagsMorph.wrong"])
 

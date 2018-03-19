@@ -1058,7 +1058,17 @@ public static final relaxngXMLTemplate = '''
 
 						<!-- <w>word</w> -->
 						<zeroOrMore>
-							<element name="w"><text/></element>
+							<element name="w">
+								<optional>
+								<attribute name="flags">
+									<list><oneOrMore>[[FLAG]]</oneOrMore></list>
+								</attribute>
+								</optional>
+								<optional>
+								<attribute name="morph"><data type="string"/></attribute>
+								</optional>
+								<text/>
+							</element>
 						</zeroOrMore>
 					</choice>
 				</element>

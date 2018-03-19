@@ -1324,7 +1324,19 @@ class HunspellXMLParser
 				{
 					if(child.name() == "w")
 					{
-						lines << child.text().trim()
+						/*
+						def word = child.text().trim()
+						def childFlags = formatFlagList(child.attributes().flags ?: "")
+						def childMorph = (child.attributes().morph ?: "").trim()
+						def wordLine = child.text().trim()
+						if(childFlags){wordLine += "/" + childFlags}
+						if(childMorph){wordLine += "\t" + childMorph}
+						lines << wordLine
+						*/
+						def line = child.text().trim()
+						def childFlags = formatFlagList(child.attributes().flags ?: "")
+						def childMorph = (child.attributes().morph ?: "").trim()
+						addDictionaryWords([line], [flags,childFlags].join(" "), [morph, childMorph].join(" "))
 					}
 				}
 			}
@@ -1332,8 +1344,8 @@ class HunspellXMLParser
 			else if(child.text())
 			{
 				lines = node.text().split(/\r?\n/).toList()
+				addDictionaryWords(lines, flags, morph)
 			}
-			addDictionaryWords(lines, flags, morph)
 		}
 	}
 	

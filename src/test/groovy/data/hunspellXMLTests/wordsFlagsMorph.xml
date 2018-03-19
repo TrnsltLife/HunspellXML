@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<hunspell>
+		<affixFile>
+			<comment>simple example for affix compression (see Hunspell(4))</comment>
+			<settings>
+				<languageCode>und</languageCode>
+				<characterSet>UTF-8</characterSet>
+				<flagType>short</flagType>
+			</settings>
+			<affixes>
+				<prefix flag="R" cross="true">
+					<rule add="re"/>
+				</prefix>
+				<br/>
+				<suffix flag="D" cross="true">
+					<rule add="ed" where="[^y]"/>
+					<rule remove="y" add="ied" where="y"/>
+				</suffix>
+				<suffix flag="S" cross="true">
+					<rule remove="y" add="ies" where="y"/>
+					<rule add="s" where="[aeiou]"/>
+					<rule add="es" where="[sz]"/>
+					<rule add="es" where="ch"/>
+					<rule add="s" where="[^c]h"/>
+					<rule add="s" where="[^aeiouhsz]"/>
+				</suffix>
+			</affixes>
+		</affixFile>
+
+		<dictionaryFile>
+			<words>
+				<w flags="S">hello</w>
+			</words>
+			<words flags="R">
+				<w flags="S">work/D	po:verb</w>
+				<w flags="S">try/D	po:verb</w>
+			</words>
+			<words flags="D">
+				<w>revert/S	po:verb</w>
+				<w>return/S	po:verb</w>
+			</words>
+		</dictionaryFile>
+
+<tests>
+<good>
+hello
+hellos
+try
+tried
+tries
+work
+worked
+works
+rework
+reworked
+reworks
+revert
+reverted
+reverts
+return
+returned
+returns
+retry
+retries
+retried
+</good>
+
+<bad>
+rerevert
+rereturn
+rereverted
+rereturned
+rereverts
+rereturns
+</bad>
+</tests>
+</hunspell>
