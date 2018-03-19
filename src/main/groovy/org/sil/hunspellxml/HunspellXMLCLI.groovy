@@ -7,6 +7,7 @@ class HunspellXMLCLI
 	public static final int ERR_INVALID_FLAG_TYPE = 3
 	public static final int ERR_NO_AFF_REQUIRES_DC_DF = 4
 	public static final int ERR_TESTS_FAILED = 5
+	public static final int ERR_FILE_NOT_FOUND = 6
 	
 	public static void main(String[] args)
 	{
@@ -149,13 +150,13 @@ class HunspellXMLCLI
 				}
 				else
 				{
-					println("Invalid flag: -" + arg)
+					System.err.println("ERROR: Invalid flag: -" + arg)
 					invalidFlags = true
 				}
 			}
 			else
 			{
-				println("Invalid flag: -" + arg)
+				System.err.println("ERROR: Invalid flag: -" + arg)
 				invalidFlags = true
 			}
 		}
@@ -190,18 +191,22 @@ class HunspellXMLCLI
 				if(!hxc.exporter.options.goodPassed ||
 				   !hxc.exporter.options.badPassed)
 				{
-					println("Tests failed")
+					System.err.println("ERROR: Tests failed")
 					System.exit(ERR_TESTS_FAILED)
 				}
 				else
 				{
-					println("Tests passed")
+					if(options.logLevel <= Log.INFO)
+					{
+						println("INFO: Tests passed")
+					}
 				}
 			}
 		}
 		else
 		{
-			println("File not found: " + file)
+			System.err.println("ERROR: File not found: " + file)
+			System.exit(ERR_FILE_NOT_FOUND)
 		}
 	}
 	
@@ -239,7 +244,7 @@ class HunspellXMLCLI
 					arg -= "dc="
 					if(!["short", "long", "UTF-8", "num"].contains(arg))
 					{
-						println("Option -df must be one of [short, long, UTF-8, num].")
+						System.err.println("ERROR: Option -df must be one of [short, long, UTF-8, num].")
 						System.exit(ERR_INVALID_FLAG_TYPE)
 					}
 					options.defaultCharSet = arg
@@ -325,13 +330,13 @@ class HunspellXMLCLI
 				}
 				else
 				{
-					println("Invalid flag: -" + arg)
+					System.err.println("ERROR: Invalid flag: -" + arg)
 					invalidFlags = true
 				}
 			}
 			else
 			{
-				println("Invalid flag: -" + arg)
+				System.err.println("ERROR: Invalid flag: -" + arg)
 				invalidFlags = true
 			}
 		}
@@ -360,7 +365,7 @@ class HunspellXMLCLI
 			{
 				if(!options.defaultCharSet || !options.defaultFlagType)
 				{
-					println("If -dic is specified but -aff is not specified, you must specify the -dc= and -df= options.")
+					System.err.println("ERROR: If -dic is specified but -aff is not specified, you must specify the -dc= and -df= options.")
 					System.exit(ERR_NO_AFF_REQUIRES_DC_DF)
 				}
 			}
@@ -375,7 +380,8 @@ class HunspellXMLCLI
 		}
 		else
 		{
-			println("File not found: " + file)
+			System.err.println("ERROR: File not found: " + file)
+			System.exit(ERR_FILE_NOT_FOUND)
 		}
 	}
 
