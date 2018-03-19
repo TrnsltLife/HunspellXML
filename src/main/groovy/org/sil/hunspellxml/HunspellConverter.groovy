@@ -832,6 +832,9 @@ class HunspellConverter
 			flags = flags.trim()
 			morph = morph.trim()
 			
+			//Check the flags here so we can test for errors and output a good error message
+			toExpandedFlagList(flags, ".dic file line ${i+1}: ${line}")
+			
 			def key = flags + "\t" + morph
 			if(!wordMap[key])
 			{
@@ -847,7 +850,7 @@ class HunspellConverter
 		{
 			def (flags, morph) = key.split("\t", 2).toList()
 			wordWriter << "<words"
-			if(flags){wordWriter << """ flags="${esc(toExpandedFlagList(flags, "dic: /${flags}"))}\""""}
+			if(flags){wordWriter << """ flags="${esc(toExpandedFlagList(flags, "", false))}\""""}
 			if(morph){wordWriter << """ morph="${esc(expandMorphemeAlias(morph))}\""""}
 			wordWriter << ">"
 			if(options.preferWallOfText)
@@ -1115,13 +1118,13 @@ class HunspellConverter
 		return alias
 	}
 	
-	public String toExpandedFlagList(String flags, origText)
+	public String toExpandedFlagList(String flags, origText, boolean printError=true)
 	{
 		flags = expandFlagAlias(flags)
-		return toFlagList(flags, origText)
+		return toFlagList(flags, origText, printError)
 	}
 	
-	public String toFlagList(String flags, origText)
+	public String toFlagList(String flags, origText, boolean printError=true)
 	{
 		flags = flags.trim()
 		flags = flags.replaceAll(/\s+/, "") //remove all spaces
@@ -1131,9 +1134,9 @@ class HunspellConverter
 			for(char c in flags)
 			{
 				flagList << c
-				if(c > '\u00ff')
+				if(c > '\u00ff' && printError)
 				{
-					log.warning("Flag character outside of the extended ASCII range: ${c}")
+					log.warning("Flag character outside of the extended ASCII range: ${c}${EOL}\t${origText}")
 				}
 			}
 		}
@@ -1152,7 +1155,7 @@ class HunspellConverter
 				{
 					def flag = "" + flags.charAt(i) + flags.charAt(i+1)
 					flagList << flag
-					if(flags.charAt(i) > '\u00ff' || flags.charAt(i+1) > '\u00ff')
+					if(printError && (flags.charAt(i) > '\u00ff' || flags.charAt(i+1) > '\u00ff'))
 					{
 						log.warning("Flag character outside of the extended ASCII range: ${flag}${EOL}\t${origText}")
 					}
@@ -1160,13 +1163,16 @@ class HunspellConverter
 				else
 				{
 					def flag = flags.charAt(i)
-					log.warning("Partial flag: ${flag}. Flags of type 'long' should be two characters long.${EOL}\t${origText}")
+					if(printError)
+					{
+						log.warning("Partial flag: ${flag}. Flags of type 'long' should be two characters long.${EOL}\t${origText}")
+					}
 				}
 			}
 		}
 		else if(flagType == "num")
 		{
-			if(!(flags =~ /^[0-9,]+$/))
+			if(!(flags =~ /^[0-9,]+$/) && printError)
 			{
 				log.warning("Lists of flags of type 'num' should contain only 0-9 and comma (,).${EOL}\t${origText}")
 			}
@@ -1176,21 +1182,23 @@ class HunspellConverter
 		//Check each individual flag
 		for(flag in flagList)
 		{
-			checkFlag(flag.toString(), origText.toString())
+			checkFlag(flag.toString(), origText.toString(), printError)
 		}
 		
 		
 		return flagList.join(" ")
 	}
 	
-	public String expandAndCheckFlag(String flag, origText)
+	public String expandAndCheckFlag(String flag, origText, boolean printError=true)
 	{
 		flag = expandFlagAlias(flag)
-		return checkFlag(flag, origText)
+		return checkFlag(flag, origText, printError)
 	}
 	
-	public String checkFlag(String flag, origText)
+	public String checkFlag(String flag, origText, boolean printError=true)
 	{
+		if(!printError) {return flag /*unchanged*/}
+		
 		if(flagType == "short" || flagType == "")
 		{
 			if(flag.size() < 1)
