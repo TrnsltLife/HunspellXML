@@ -3,7 +3,9 @@ import org.sil.hunspellxml.*
 import java.nio.charset.Charset
 import java.nio.file.*
 
-TEST_INPUT = "src/test/groovy/data/hunspellTests/"
+TEST_INPUT_DIRS = ["src/test/groovy/data/hunspellTests/",
+			  "src/test/groovy/data/hunspellTestsPlus/"]
+
 TEST_OUTPUT = "src/test/groovy/data/roundtripOutput/"
 currentTest = ""
 logLevel = Log.WARNING
@@ -20,15 +22,19 @@ def failingList = [
 	"forbiddenword.dic", //Something weird here. Changing word order in .dic file to match original .dic file causes this to pass tests.
 	"utf8_nonbmp.dic" //This fails when running Hunspell's test too:> ./test.sh utf8_nonbmp
 ]
-hunspellTestDir = new File(TEST_INPUT)
+
 def fileList = []
-if(doFailing)
+for(testInputDir in TEST_INPUT_DIRS)
 {
-	fileList = failingList.collect{new File(TEST_INPUT + it)}
-}
-else
-{
-	hunspellTestDir.eachFileMatch(~/.*\.dic/){it-> fileList << it}
+	hunspellTestDir = new File(testInputDir)
+	if(doFailing)
+	{
+		fileList = failingList.collect{new File(testInputDir + it)}
+	}
+	else
+	{
+		hunspellTestDir.eachFileMatch(~/.*\.dic/){it-> fileList << it}
+	}
 }
 fileList.sort()
 println(fileList)
