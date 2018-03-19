@@ -42,7 +42,11 @@ class HunspellXMLExporter
 		suppressAutoBlankLines:false,
 		suppressMyBlankLines:false,
 		suppressAutoComments:false,
-		suppressMyComments:false])
+		suppressMyComments:false,
+		goodPassed:true,
+		goodResults:[],
+		badPassed:true,
+		badResults:[]])
 	
 	def options = [:]
 		

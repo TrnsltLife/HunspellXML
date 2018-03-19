@@ -110,7 +110,7 @@ public class HunspellTester
 	}
 	
 	//Check the test files for conformance with the Hunspell dictionary
-	public checkTestFiles(HunspellXMLExporter hxe)
+	public boolean checkTestFiles(HunspellXMLExporter hxe)
 	{
 		def log = hxe.log
 		
@@ -121,6 +121,7 @@ public class HunspellTester
 				//test correct spellings file
 				log.info("Testing 'correctly' spelled words in " + hxe.goodFile + "...")
 				def errorList = checkTestFile(hxe.goodFile)
+				hxe.options.goodResults = errorList
 				if(errorList.find{it.misspelled})
 				{
 					log.warning("Some words listed in " + (new File(hxe.goodFile)).getName() + " (which should contain only correct spellings) are rejected as misspellings by the current Hunspell dictionary:\r\n" +
@@ -128,10 +129,12 @@ public class HunspellTester
 						errorList.collect{e-> "${e.word} :: ${e.morph? 'morph:'+e.morph : ''} ${e.stem? 'stem:'+e.stem : ''} ${e.suggest? 'suggest:'+e.suggest : ''}"}.join("\r\n\t") +
 						"\r\n}\r\n"
 					)
+					hxe.options.goodPassed = false
 				}
 				else
 				{
 					log.info("Correctly spelled words test completed without errors.")
+					hxe.options.goodPassed = true
 				}
 			}
 			if(hxe?.badFile)
@@ -139,6 +142,7 @@ public class HunspellTester
 				//test misspellings file
 				log.info("Testing 'misspelled' words in " + hxe.badFile + "...")
 				def errorList = checkTestFile(hxe.badFile)
+				hxe.options.badResults = errorList
 				if(errorList.find{!it.misspelled})
 				{
 					log.warning("Some words listed in " + (new File(hxe.badFile)).getName() + " (which should contain only incorrect spellings)  are accepted as correctly spelled by the current Hunspell dictionary:\r\n" +
@@ -146,10 +150,12 @@ public class HunspellTester
 						errorList.collect{e-> "${e.word} :: ${e.morph? 'morph:'+e.morph : ''} ${e.stem? 'stem:'+e.stem : ''} ${e.suggest? 'suggest:'+e.suggest : ''}"}.join("\r\n\t") +
 						"\r\n}\r\n"
 					)
+					hxe.options.badPassed = false
 				}
 				else
 				{
 					log.info("Misspelled words test completed without errors.")
+					hxe.options.badPassed = true
 				}
 			}
 		}

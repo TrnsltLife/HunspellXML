@@ -6,6 +6,7 @@ class HunspellXMLCLI
 	public static final int ERR_INVALID_FLAGS = 2
 	public static final int ERR_INVALID_FLAG_TYPE = 3
 	public static final int ERR_NO_AFF_REQUIRES_DC_DF = 4
+	public static final int ERR_TESTS_FAILED = 5
 	
 	public static void main(String[] args)
 	{
@@ -184,6 +185,19 @@ class HunspellXMLCLI
 			def hxc = new HunspellXMLConverter(new File(file), options)
 			hxc.log.debug("Options set from command line: " + options)
 			hxc.convert()
+			if(hxc.exporter.options.runTests)
+			{
+				if(!hxc.exporter.options.goodPassed ||
+				   !hxc.exporter.options.badPassed)
+				{
+					println("Tests failed")
+					System.exit(ERR_TESTS_FAILED)
+				}
+				else
+				{
+					println("Tests passed")
+				}
+			}
 		}
 		else
 		{
@@ -436,8 +450,8 @@ HunspellXML [Optional Flags] [Output Suppression] [Processing Options] hunspell_
 -dic               Process the Hunspell .dic file
 -tst               Process the Hunspell .good and .wrong files
 -dat               Process the MyThes .dat file
--dat=thes_file.dat Process the MyThes .dat file named file.dat. This allows the .dat
-                      file to start with a different name that the .aff/.dic files.
+-dat=thes_file.dat Process the MyThes .dat file named thes_file.dat. This allows the
+                      .dat file to start with a different name than the .aff/.dic files.
 """)
 	}
 
