@@ -11,6 +11,8 @@ hunspell-xml*.jar
 local.properties
 /src/test/groovy/data/oldTests/
 /src/test/groovy/data/roundtripOutput/**
+/src/test/groovy/data/hunspellTests-1-6-2
+/src/test/groovy/data/hunspellXMLTests/out
 
 ##########################
 #Gradle gitignore settings
