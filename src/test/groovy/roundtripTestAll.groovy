@@ -3,7 +3,7 @@ import org.sil.hunspellxml.*
 import java.nio.charset.Charset
 import java.nio.file.*
 
-TEST_INPUT_DIRS = ["src/test/groovy/data/hunspellTests/",
+TEST_INPUT_DIRS = ["src/test/groovy/data/hunspellTests-1-3-2/",
 			  "src/test/groovy/data/hunspellTestsPlus/"]
 
 TEST_OUTPUT = "src/test/groovy/data/roundtripOutput/"
@@ -15,12 +15,14 @@ def startAfter = ""
 def doOne = false
 def doFailing = false
 def failingList = [
-	//"alias.dic", //Need to extract flags from AF when converting to HunspellXML
-	//"alias2.dic", //Need to extract flags from AF and AM when converting to HunspellXML
-	//"alias3.dic", //Need to extract flags from AM when converting to HunspellXML
+	//1.3.2
 	"arabic.dic", //This fails when running Hunspell's test too:> ./test.sh arabic
 	"forbiddenword.dic", //Something weird here. Changing word order in .dic file to match original .dic file causes this to pass tests.
 	"utf8_nonbmp.dic" //This fails when running Hunspell's test too:> ./test.sh utf8_nonbmp
+	//1.6.2
+	//"arabic.dic", //Is it detecting a long FLAG type without long being specified?
+	//"base_utf.dic",
+	//"forbiddenword.dic", //Something weird here. Changing word order in .dic file to match original .dic file causes this to pass tests. Dic file header indicates less words than actually appear.
 ]
 
 def fileList = []
@@ -41,7 +43,7 @@ println(fileList)
 
 for(testFile in fileList)
 {
-	if(testFile.getName() =~ /^[0-9]/){continue}
+	//if(testFile.getName() =~ /^[0-9]/){continue}
 	if(startWith && testFile.getName().compareTo(startWith) < 0) {continue}
 	if(startAfter && testFile.getName().compareTo(startAfter) <= 0){continue}
 	if(failingList.contains(testFile.getName()) && !doFailing){continue}
@@ -129,7 +131,7 @@ def xmlToHunspell(file)
 		[hunspell:true, tests:true, thesaurus:false,
 		license:false, readme:false,
 		firefox:false, opera:false, libreOffice:false,
-		//hunspellFileName:fileName,
+		hunspellFileName:"und",
 		customPath:File.separator,
 		relaxNG:true, runTests:false,
 		suppressAutoComments:true, suppressAutoBlankLines:true,
