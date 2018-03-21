@@ -84,6 +84,7 @@ class HunspellConverter
 "SET":[function:"characterSet", level:["hunspell","affixFile","settings"]],
 "CHECKCOMPOUNDCASE":[function:"checkCompoundCase", level:["hunspell","affixFile","compounds"]],
 "CHECKCOMPOUNDDUP":[function:"checkCompoundDuplicates", level:["hunspell","affixFile","compounds"]],
+"CHECKCOMPOUNDPATTERN":[function:"compoundPatterns", level:["hunspell","affixFile","compounds","compoundPatterns"]],
 "CHECKCOMPOUNDREP":[function:"checkCompoundReplacements", level:["hunspell","affixFile","compounds"]],
 "CHECKCOMPOUNDTRIPLE":[function:"checkCompoundTriple", level:["hunspell","affixFile","compounds"]],
 "CHECKSHARPS":[function:"checkSharpS", level:["hunspell","affixFile","settings"]],
@@ -99,7 +100,6 @@ class HunspellConverter
 "COMPOUNDPERMITFLAG":[function:"compoundPermit", level:["hunspell","affixFile","compounds"]],
 "COMPOUNDROOT":[function:"compoundRoot", level:["hunspell","affixFile","compounds"]],
 "COMPOUNDRULE":[function:"compoundRules", level:["hunspell","affixFile","compounds","compoundRules"]],
-"CHECKCOMPOUNDPATTERN":[function:"compoundPatterns", level:["hunspell","affixFile","compounds","compoundPatterns"]],
 "COMPOUNDSYLLABLE":[function:"compoundSyllable", level:["hunspell","affixFile","compounds"]],
 "COMPOUNDWORDMAX":[function:"compoundWordMax", level:["hunspell","affixFile","compounds"]],
 "FLAG":[function:"flagType", level:["hunspell","affixFile","settings"]],
@@ -133,6 +133,7 @@ class HunspellConverter
 "SUGSWITHDOTS":[function:"suggestionsWithDots", level:["hunspell","affixFile","suggestions"]],
 "SYLLABLENUM":[function:"syllableNum", level:["hunspell","affixFile","compounds"]],
 "TRY":[function:"tryChars", level:["hunspell","affixFile","suggestions"]],
+"VERSION":[function:"version", level:["hunspell","affixFile","settings"]],
 "WARN":[function:"warn", level:["hunspell","affixFile","suggestions"]],
 "WORDCHARS":[function:"wordChars", level:["hunspell","affixFile","settings"]]
 		]
@@ -159,11 +160,12 @@ class HunspellConverter
 			"compoundMin",
 			"compoundWordMax",
 			//"flagType", removed for custom processing
-			"languageCode",
+			//"languageCode", removed for custom processing
 			"maxCompoundSuggestions",
 			"maxDifference",
 			"maxNGramSuggestions",
-			"keyboard"
+			"keyboard",
+			//"version", removed for custom processing
 		],
 	
 		"settingCharList": [
@@ -592,33 +594,9 @@ class HunspellConverter
 		//showLevels(annotatedLines)
 		
 		//Loop over the file and gather element groups together (settings, suggestions, compounds, convertInput, convertOutput, affixes)
-		for(type in ["settings", "suggestions", "compounds", "convertInput", "convertOutput", "affixes"])
-		{
-			def lastIndex = -1
-			def skipped = false
-			for(int i=0; i < annotatedLines.size(); i++)
-			{
-				if(annotatedLines[i].level.contains(type))
-				{
-					if(!skipped)
-					{
-						lastIndex = i
-					}
-					else
-					{
-						annotatedLines.add(lastIndex, annotatedLines.remove(i))
-						lastIndex++
-						i--
-					}
-				}
-				else
-				{
-					if(lastIndex > -1)
-					{
-						skipped = true
-					}
-				}
-			}
+		gatherAnnotatedLines(annotatedLines)
+		
+		sortAnnotatedLinesByType(annotatedLines)
 		
 
 //log.debug("After the Gathering")
@@ -637,6 +615,7 @@ class HunspellConverter
 
 			if(!line.level)
 			{
+				log.warning("Warning: Line not handled.${EOL}\t ${line.text}")
 				continue; //and don't change the prevLevel
 			}
 			else
@@ -658,6 +637,75 @@ class HunspellConverter
 			prevLine = line
 		}
 		printCloseOpenTags(prevLevel, ["hunspell"], prevLine) //print the end of the xml file
+	}
+	
+	
+	def gatherAnnotatedLines(List annotatedLines)
+	{
+		def typeList = ["metadata", "settings", "convertInput", "convertOutput", "suggestions", "compounds", "affixes"]
+		//Loop over the file and gather element groups together (settings, suggestions, compounds, convertInput, convertOutput, affixes)
+		for(type in typeList)
+		{
+			def lastIndex = -1
+			def skipped = false
+			for(int i=0; i < annotatedLines.size(); i++)
+			{
+				//If this line is of the current type
+				if(annotatedLines[i].level.contains(type))
+				{
+					//If no skips have occurred, update the lastIndex of a line with the current type
+					if(!skipped)
+					{
+						lastIndex = i
+					}
+					//Otherwise, we've skipped one of the current type
+					else
+					{
+						//Remove thies line and add it in at the lastIndex, right after the last line we found that had the current type
+						annotatedLines.add(lastIndex, annotatedLines.remove(i))
+						//Increment the lastIndex to after the line we just moved/inserted
+						lastIndex++
+						//Decrement the i counter because we just removed a line at i and it will be incremented in the for loop
+						i--
+					}
+				}
+				//If this line isn't of the current type
+				else
+				{
+					//And if we've already found one line of the current type
+					if(lastIndex > -1)
+					{
+						//Then set the skipped flag. There was a break in the run of lines of the current type.
+						skipped = true
+					}
+				}
+			}
+		}
+	}
+	
+	def sortAnnotatedLinesByType(List annotatedLines)
+	{
+		def typeOrderList = ["affixFile", "metadata", "settings", "convertInput", "convertOutput", "suggestions", "compounds", "affixes", ""]
+		def typeOrderMap = [:]
+		typeOrderList.eachWithIndex{type, index-> typeOrderMap[type] = index}
+		annotatedLines.sort{a,b -> 
+			//Sort the item by where it's type's sort order in the typeOrderList
+			//e.g. if typeOrderList = ["metadata", "settings", "suggestions"],
+			//then items with a level ending in "metadata" should sort before "settings"
+			def aType = findLastMatchInList(a.level, typeOrderList)
+			def bType = findLastMatchInList(b.level, typeOrderList)
+			return typeOrderMap[aType] <=> typeOrderMap[bType]
+		}
+	}
+	
+	String findLastMatchInList(List fromList, List toList)
+	{
+		//Loop backwards over fromList to find the last item that is also in toList
+		for(int i=fromList.size() - 1; i > 0; i--)
+		{
+			if(toList.contains(fromList[i])){return fromList[i]}
+		}
+		return ""
 	}
 	
 	
@@ -850,25 +898,17 @@ class HunspellConverter
 			wordWriter << "<words"
 			if(flags){wordWriter << """ flags="${esc(toExpandedFlagList(flags, "", false))}\""""}
 			if(morph){wordWriter << """ morph="${esc(expandMorphemeAlias(morph))}\""""}
-			wordWriter << ">"
+			wordWriter << ">" + EOL
 			if(options.preferWallOfText)
 			{
-				wordWriter << EOL //EOL after <words>
 				wordMap[key].sort().each{word->
 					wordWriter << esc(word) + EOL
 				}
 			}
 			else
 			{
-				int wCount = 0
 				wordMap[key].sort().each{word->
-					wordWriter << "<w>" + esc(word) + "</w>"
-					wCount++
-					if(wCount >= 5)
-					{
-						wordWriter << EOL
-						wCount = 0
-					}
+					wordWriter << "<w>" + esc(word) + "</w>" + EOL
 				}
 			}
 			wordWriter << "</words>" + EOL
@@ -1284,12 +1324,8 @@ class HunspellConverter
 	{
 		setParamsAndComments(line, 1) //sets the line.params and line.comment attributes
 		line.xml = "<${line.function}${commAttr(line)}>${esc(line.params)}</${line.function}>"
-		
-		if(line.function == "languageCode")
-		{
-			foundLangCode = true
-		}
-		else if(line.function == "characterSet")
+
+		if(line.function == "characterSet")
 		{
 			foundCharacterSet = true
 		}
@@ -1330,6 +1366,38 @@ class HunspellConverter
 		line.params = line.text.replaceAll(/^#\s(.*)/, "\$1")
 		line.xml = "<comment>${esc(line.params)}</comment>"
 		//line.xml = ""
+	}
+	
+	def version(line)
+	{
+		//Create the line for settings version
+		setting1(line)
+		
+		//Insert a different line for metadata version
+		def metaLine = newAnnotatedLine()
+		metaLine.text = line.text
+		metaLine.function = "version"
+		metaLine.level = ["hunspell", "metadata"]
+		setting1(metaLine)
+		line.insertBefore = metaLine
+	}
+	
+	def languageCode(line)
+	{
+		foundLangCode = true
+		
+		//Create the line for settings languageCode
+		setting1(line)
+		
+		//Insert a different line for metadata localeList
+		def metaLine = newAnnotatedLine()
+		metaLine.text = line.text
+		metaLine.function = "localeList"
+		setParamsAndComments(metaLine, 1) //sets the line.params and line.comment attributes
+		metaLine.xml = "<${metaLine.function}${commAttr(metaLine)}>${esc(metaLine.params)}</${metaLine.function}>"
+		metaLine.level = ["hunspell", "metadata"]
+		line.insertBefore = metaLine
+
 	}
 	
 	def aliasFlags(line)
