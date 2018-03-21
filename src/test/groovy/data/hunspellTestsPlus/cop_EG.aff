@@ -731,7 +731,7 @@ PFX p 0 ⲁⲩϣ̀ⲧⲉⲙ . NEG_COND_3PPL
 #
 #------------------------------------------
 # accusative pronouns, simplified!
-̀# I have observed that "ⲑⲏⲛⲟⲩ" has a special treatement:
+# I have observed that "ⲑⲏⲛⲟⲩ" has a special treatement:
 # since it (also?) follows status constructus/nominalis (-), it should
 # be written separatley and not joined
  
@@ -757,7 +757,7 @@ SFX s 0 ϯ [^ⲟⲱⲧ] ACC_2PSGF
 SFX s ⲧ ϯ [ⲧ] ACC_2PSGF
 SFX s ⲟ ⲱⲧⲉⲛ [ⲟ] ACC_2PPL
 SFX s 0 ⲧⲉⲛ . ACC_2PPL
-̀SFX s 0 ⲑⲏⲛⲟⲩ . ACC_2PPL
+SFX s 0 ⲑⲏⲛⲟⲩ . ACC_2PPL
 SFX s 0 ⲉⲛⲑⲏⲛⲟⲩ [ⲧ] 
 SFX s 0 ϥ/E . ACC_3PSGM
 SFX s ⲉ ⲁϥ/E [ⲉ] ACC_3PSGM
@@ -783,7 +783,7 @@ SFX m 0 ⲧⲉⲛⲑⲏⲛⲟⲩ . 2PPL
 SFX m 0 ⲧⲟⲩ . 3PPL
 
 # ⲧⲱⲛ⸗ (raise carry, (166)
-̀# sometimes: ⲧⲱⲟⲩⲛ⸗ (irregular)
+# sometimes: ⲧⲱⲟⲩⲛ⸗ (irregular)
 SFX n Y 9
 SFX n 0 ⲧ . 1PSG
 SFX n 0 ⲕ . 2PSGM
