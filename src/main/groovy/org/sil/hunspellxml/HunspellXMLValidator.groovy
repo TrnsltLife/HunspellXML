@@ -373,7 +373,6 @@ public static final relaxngXMLTemplate = '''
 					[[COMMENT_ATTR]]
 				</element>
 
-			
 				<!-- flagType (REQUIRED) -->
 				<element name="flagType">
 					<choice>
@@ -381,6 +380,11 @@ public static final relaxngXMLTemplate = '''
 					</choice>
 					[[COMMENT_ATTR]]
 				</element>
+
+				<!-- version -->
+				<optional>
+				<element name="version"><text/>[[COMMENT_ATTR]]</element>
+				</optional>
 				
 				<!-- wordChars -->
 				<optional>
@@ -608,6 +612,10 @@ public static final relaxngXMLTemplate = '''
 				</element>
 				</optional>
 				
+				<!-- noNGramSuggestions -->
+				<optional>
+				<element name="noNGramSuggestions"><attribute name="flag">[[FLAG]]</attribute>[[COMMENT_ATTR]]</element>
+				</optional>
 			
 				<!-- noSuggestions -->
 				<optional>
