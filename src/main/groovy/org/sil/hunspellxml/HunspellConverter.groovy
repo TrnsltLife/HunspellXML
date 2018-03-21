@@ -619,7 +619,6 @@ class HunspellConverter
 					}
 				}
 			}
-		}
 		
 
 //log.debug("After the Gathering")
@@ -638,7 +637,6 @@ class HunspellConverter
 
 			if(!line.level)
 			{
-				log.debug("Warning: Line not handled.${EOL}\t ${line.text}")
 				continue; //and don't change the prevLevel
 			}
 			else
