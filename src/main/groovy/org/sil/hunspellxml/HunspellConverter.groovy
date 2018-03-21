@@ -119,6 +119,7 @@ class HunspellConverter
 "MAXNGRAMSUGS":[function:"maxNGramSuggestions", level:["hunspell","affixFile","suggestions"]],
 "NEEDAFFIX":[function:"needAffix", level:["hunspell","affixFile","settings"]],
 "NOSPLITSUGS":[function:"noSplitSuggestions", level:["hunspell","affixFile","suggestions"]],
+"NONGRAMSUGGEST":[function:"noNGramSuggestions", level:["hunspell","affixFile","suggestions"]],
 "NOSUGGEST":[function:"noSuggestions", level:["hunspell","affixFile","suggestions"]],
 "ONLYINCOMPOUND":[function:"onlyInCompound", level:["hunspell","affixFile","compounds"]],
 "ONLYMAXDIFF":[function:"onlyMaxDifference", level:["hunspell","affixFile","suggestions"]],
@@ -187,6 +188,7 @@ class HunspellConverter
 			"forceUpperCase",
 			"keepCase",
 			"needAffix",
+			"noNGramSuggestions",
 			"noSuggestions",
 			"onlyInCompound",
 			"substandard",
@@ -447,7 +449,7 @@ class HunspellConverter
 				writer << line + EOL
 			}
 			//Line starts with an opening tags
-			if(line.startsWith("<") && !line.startsWith("</") && !line.startsWith("<!"))
+			if(line.startsWith("<") && !line.startsWith("</") && !line.startsWith("<!") && !line.startsWith("<?"))
 			{
 				//If there's no ending tag on this line, increase the indent level
 				if(line.indexOf("/>") < 0 && line.indexOf("</") < 0) //no end tag on this line
