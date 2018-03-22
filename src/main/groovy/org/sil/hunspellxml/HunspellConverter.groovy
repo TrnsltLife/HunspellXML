@@ -2,7 +2,7 @@ package org.sil.hunspellxml
 
 import java.io.File;
 
-class HunspellConverter 
+class HunspellConverter
 {
 	//Utility class to parse Hunspell .aff and .dic files
 	//and convert them to HunspellXML format
@@ -837,7 +837,11 @@ class HunspellConverter
 		def lines = text.split("\r?\n").toList()
 		
 		//The first line contains the count of how many words in the dictionary.
-		//It can also contain an end-of-line comment. Get this comment.
+		def count = lines[0].replaceAll(/^([0-9]+).*/, '$1')
+		if(count.isInteger()){count = Integer.parseInt(count)}
+		else{count = -1}
+
+		//The first line can also contain an end-of-line comment. Get this comment.
 		def comment = ""
 		if(lines[0].indexOf("#") > -1)
 		{
