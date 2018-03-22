@@ -334,21 +334,6 @@ class HunspellConverter
 		{
 			log.info("HunspellConvert converting ${processFiles.collect{it.getName()}.join(", ")}")
 		}
-		
-		/*
-		//If neither file exists, print an error
-		if(!dicFile.exists() || !affFile.exists())
-		{
-			def files = [dicFile.exists()?null:dicFile, affFile.exists()?null:affFile].findAll{it}
-			log.error("Missing required file${files.size()>1?'s':''}. ${files.join(", ")}")
-		}
-		//Otherwise log the files that are being processed
-		else
-		{
-			def files = [options.skipDic?null:dicFile, options.skipAff?null:affFile].findAll{it != null}
-			log.info("HunspellConvert converting ${files.collect{it.getName()}.join(", ")}")
-		}
-		*/
 
 		//Get the actual charset from the file
 		//charSet = extractCharacterSet()
@@ -425,6 +410,11 @@ class HunspellConverter
 		mostRecentWriter = whichWriter
 	}
 	
+	private String troubleOnLine(line)
+	{
+		return EOL + "\t" + line.file + " file line " + line.number + ": " + line.text
+	}
+	
 	private prettyPrintXML()
 	{
 		//Give the XML nice indent levels
@@ -462,7 +452,7 @@ class HunspellConverter
 	
 	def newAnnotatedLine()
 	{
-		return [level:[], text:"", xml:"", verb:"", function:"", params:"", comment:"", insertBefore:""]
+		return [level:[], text:"", xml:"", verb:"", function:"", params:"", comment:"", insertBefore:"", file:"aff", number:-1]
 	}
 	
 	private convertAffFile()
@@ -490,10 +480,11 @@ class HunspellConverter
 		
 		//Set up a list of annotated lines
 		def annotatedLines = []
-		for(line in lines)
+		for(int i=0; i<lines.size(); i++)
 		{
 			def newLine = newAnnotatedLine()
-			newLine.text = line
+			newLine.text = lines[i]
+			newLine.number = i+1
 			annotatedLines << newLine
 		}
 		
@@ -617,7 +608,7 @@ class HunspellConverter
 
 			if(!line.level)
 			{
-				log.warning("Warning: Line not handled.${EOL}\t ${line.text}")
+				log.warning("Line not handled." + troubleOnLine(line))
 				continue; //and don't change the prevLevel
 			}
 			else
@@ -883,7 +874,7 @@ class HunspellConverter
 			morph = morph.trim()
 			
 			//Check the flags here so we can test for errors and output a good error message
-			toExpandedFlagList(flags, ".dic file line ${i+1}: ${line}")
+			toExpandedFlagList(flags, [text:line, number:i+1, file:'dic'])
 			
 			def key = flags + "\t" + morph
 			if(!wordMap[key])
@@ -900,7 +891,7 @@ class HunspellConverter
 		{
 			def (flags, morph) = key.split("\t", 2).toList()
 			wordWriter << "<words"
-			if(flags){wordWriter << """ flags="${esc(toExpandedFlagList(flags, "", false))}\""""}
+			if(flags){wordWriter << """ flags="${esc(toExpandedFlagList(flags, [:], false))}\""""}
 			if(morph){wordWriter << """ morph="${esc(expandMorphemeAlias(morph))}\""""}
 			wordWriter << ">" + EOL
 			if(options.preferWallOfText)
@@ -995,7 +986,7 @@ class HunspellConverter
 							if(count.isInteger()) {count = count.toInteger()}
 							else
 							{
-								log.error("Couldn't determine synonym count. ${count} is not an integer." + EOL + line)
+								log.warning("Couldn't determine synonym count. ${count} is not an integer.", [text:line, number:i+1, file:"dat"])
 								continue
 							}
 							wordWriter << """<entry word="${esc(word)}">""" + EOL
@@ -1160,14 +1151,16 @@ class HunspellConverter
 		return alias
 	}
 	
-	public String toExpandedFlagList(String flags, origText, boolean printError=true)
+	public String toExpandedFlagList(String flags, Map line, boolean printError=true)
 	{
 		flags = expandFlagAlias(flags)
-		return toFlagList(flags, origText, printError)
+		return toFlagList(flags, line, printError)
 	}
 	
-	public String toFlagList(String flags, origText, boolean printError=true)
+	public String toFlagList(String flags, Map line, boolean printError=true)
 	{
+		//TODO: convert all the origText to calls to troubleOnLine(line)
+		def origText = line.text
 		flags = flags.trim()
 		flags = flags.replaceAll(/\s+/, "") //remove all spaces
 		def flagList = []
@@ -1178,7 +1171,7 @@ class HunspellConverter
 				flagList << c
 				if(c > '\u00ff' && printError)
 				{
-					log.warning("Flag character outside of the extended ASCII range: ${c}${EOL}\t${origText}")
+					log.warning("Flag character outside of the extended ASCII range: ${c}" + troubleOnLine(line))
 				}
 			}
 		}
@@ -1199,7 +1192,7 @@ class HunspellConverter
 					flagList << flag
 					if(printError && (flags.charAt(i) > '\u00ff' || flags.charAt(i+1) > '\u00ff'))
 					{
-						log.warning("Flag character outside of the extended ASCII range: ${flag}${EOL}\t${origText}")
+						log.warning("Flag character outside of the extended ASCII range: ${flag}" + troubleOnLine(line))
 					}
 				}
 				else
@@ -1207,7 +1200,7 @@ class HunspellConverter
 					def flag = flags.charAt(i)
 					if(printError)
 					{
-						log.warning("Partial flag: ${flag}. Flags of type 'long' should be two characters long.${EOL}\t${origText}")
+						log.warning("Partial flag: ${flag}. Flags of type 'long' should be two characters long." + troubleOnLine(line))
 					}
 				}
 			}
@@ -1216,7 +1209,7 @@ class HunspellConverter
 		{
 			if(!(flags =~ /^[0-9,]+$/) && printError)
 			{
-				log.warning("Lists of flags of type 'num' should contain only 0-9 and comma (,).${EOL}\t${origText}")
+				log.warning("Lists of flags of type 'num' should contain only 0-9 and comma (,)." + troubleOnLine(line))
 			}
 			flagList = flags.split(",").toList()
 		}
@@ -1224,69 +1217,70 @@ class HunspellConverter
 		//Check each individual flag
 		for(flag in flagList)
 		{
-			checkFlag(flag.toString(), origText.toString(), printError)
+			checkFlag(flag.toString(), line, printError)
 		}
 		
 		
 		return flagList.join(" ")
 	}
 	
-	public String expandAndCheckFlag(String flag, origText, boolean printError=true)
+	public String expandAndCheckFlag(String flag, Map line, boolean printError=true)
 	{
 		flag = expandFlagAlias(flag)
-		return checkFlag(flag, origText, printError)
+		return checkFlag(flag, line, printError)
 	}
 	
-	public String checkFlag(String flag, origText, boolean printError=true)
+	public String checkFlag(String flag, Map line, boolean printError=true)
 	{
+		def origText = line.text
 		if(!printError) {return flag /*unchanged*/}
 		
 		if(flagType == "short" || flagType == "")
 		{
 			if(flag.size() < 1)
 			{
-				log.warning("Flag of type 'short' (default) has too few characters. It should be one character long: ${flag}${EOL}\t${origText}")
+				log.warning("Flag of type 'short' (default) has too few characters. It should be one character long: ${flag}" + troubleOnLine(line))
 			}
 			else if(flag.size() > 1)
 			{
-				log.warning("Flag of type 'short' (default) has too many characters. It should be one character long: ${flag}${EOL}\t${origText}")
+				log.warning("Flag of type 'short' (default) has too many characters. It should be one character long: ${flag}" + troubleOnLine(line))
 			}
 			else if(flag.charAt(0) > '\u00ff')
 			{
-				log.warning("Flag of type 'short' is a character outside of the extended ASCII range: ${flag}${EOL}\t${origText}")
+				log.warning("Flag of type 'short' is a character outside of the extended ASCII range: ${flag}" + troubleOnLine(line))
 			}
 		}
 		else if(flagType == "UTF-8")
 		{
 			if(flag.size() < 1)
 			{
-				log.warning("Flag of type 'UTF-8' has too few characters. It should be one character long: ${flag}${EOL}\t${origText}")
+				log.warning("Flag of type 'UTF-8' has too few characters. It should be one character long: ${flag}" + troubleOnLine(line))
 			}
 			else if(flag.size() > 1)
 			{
-				log.warning("Flag of type 'UTF-8' has too many characters. It should be one character long: ${flag}${EOL}\t${origText}")
+				log.warning("Flag of type 'UTF-8' has too many characters. It should be one character long: ${flag}" + troubleOnLine(line))
 			}
 		}
 		else if(flagType == "long")
 		{
 			if(flag.size() < 2)
 			{
-				log.warning("Flag of type 'long' has too few characters. It should be two characters long: ${flag}${EOL}\t${origText}")
+				log.warning("Flag of type 'long' has too few characters. It should be two characters long: ${flag}" + troubleOnLine(line))
 			}
 			else if(flag.size() > 2)
 			{
-				log.warning("Flag of type 'long' has too many characters. It should be two characters long: ${flag}${EOL}\t${origText}")
+				log.warning("Flag of type 'long' has too many characters. It should be two characters long: ${flag}" + troubleOnLine(line))
 			}
 			else if(flag.charAt(0) > '\u00ff' || flag.charAt(1) > '\u00ff')
 			{
-				log.warning("Flag of type 'long' has a character outside of the extended ASCII range: ${flag}${EOL}\t${origText}")
+				log.warning("Flag of type 'long' has a character outside of the extended ASCII range: ${flag}" + troubleOnLine(line))
 			}
 		}
 		else if(flagType == "num")
 		{
 			if(!(flag =~ /^[0-9]+$/))
 			{
-				log.warning("Flag of type 'num' should contain only the digits 0-9.${EOL}\t${origText}")
+				log.warning("Flag of type 'num' should contain only the digits 0-9." + troubleOnLine(line))
 			}
 		}
 		
@@ -1344,7 +1338,7 @@ class HunspellConverter
 	def setting1Flag(line)
 	{
 		setParamsAndComments(line, 1) //sets the line.params and line.comment attributes
-		line.xml = """<${line.function} flag="${esc(expandAndCheckFlag(line.params, line.text))}"${commAttr(line)}/>"""
+		line.xml = """<${line.function} flag="${esc(expandAndCheckFlag(line.params, line))}"${commAttr(line)}/>"""
 	}
 	
 	def commAttr(line)
@@ -1413,7 +1407,7 @@ class HunspellConverter
 		}
 		else
 		{
-			aliasFlags << toFlagList(line.params.trim(), line.text)
+			aliasFlags << toFlagList(line.params.trim(), line)
 		}
 		line.xml = "<comment>${esc(line.text)} # ${aliasFlags.size()-1}${line.comment ? " # " + line.comment : ""}</comment>"
 	}
@@ -1433,7 +1427,7 @@ class HunspellConverter
 		{
 			flagType = ""
 			line.xml = ""
-			log.warning("Invalid option for flag type. Defaulting to 'short'.${EOL}\t${line.text}")
+			log.warning("Invalid option for flag type. Defaulting to 'short'." + troubleOnLine(line))
 		}
 		else
 		{
@@ -1582,9 +1576,9 @@ class HunspellConverter
 			(startChars, startFlags) = start.split("/").toList()
 			line.xml = "<pattern"
 			line.xml += """ endChars="${esc(endChars)}\""""
-			if(endFlags){line.xml += """ endFlags="${esc(toExpandedFlagList(endFlags, line.text))}\""""}
+			if(endFlags){line.xml += """ endFlags="${esc(toExpandedFlagList(endFlags, line))}\""""}
 			line.xml += """ startChars="${esc(startChars)}\""""
-			if(startFlags){line.xml += """ startFlags="${esc(toExpandedFlagList(startFlags, line.text))}\""""}
+			if(startFlags){line.xml += """ startFlags="${esc(toExpandedFlagList(startFlags, line))}\""""}
 			if(replace){line.xml += """ replacement="${esc(replace)}\""""}
 			line.xml += "${commAttr(line)}/>"
 		}
@@ -1627,13 +1621,13 @@ class HunspellConverter
 	def lemmaPresent(line)
 	{
 		line.xml = ""
-		log.warning("LEMMA_PRESENT not used in Hunspell 1.2. Instead, use the st: field on dictionary entries or affix rules.${EOL}\t ${line.text}")
+		log.warning("LEMMA_PRESENT not used in Hunspell 1.2. Instead, use the st: field on dictionary entries or affix rules." + troubleOnLine(line))
 	}
 	
 	def pseudoroot(line)
 	{
 		line.function = "needAffix"
-		log.warning("PSEUDOROOT depecated. Use NEEDAFFIX option instead.${EOL}\t${line.text}")
+		log.warning("PSEUDOROOT depecated. Use NEEDAFFIX option instead." + troubleOnLine(line))
 		setting1Flag(line)
 	}
 	
@@ -1647,7 +1641,7 @@ class HunspellConverter
 	def syllableNum(line)
 	{
 		setParamsAndComments(line, 1) //sets the line.params and line.comment attributes
-		def flags = toExpandedFlagList(line.params, line.text)
+		def flags = toExpandedFlagList(line.params, line)
 		line.xml = """<syllableNum flags="${esc(flags)}"${commAttr(line)}/>"""
 	}
 	
@@ -1670,7 +1664,7 @@ class HunspellConverter
 		if(params.size() == 3 && params[0] != lastAffixFlag && params[1] =~ /^(Y|N)$/ && params[2] =~ /^[0-9]+$/)
 		{
 			setParamsAndComments(line, 3) //maximum of 3 params
-			line.xml += """<${type} flag="${esc(toExpandedFlagList(params[0], line.text))}" cross="${params[1]=='Y'?'true':'false'}"${commAttr(line)}>"""
+			line.xml += """<${type} flag="${esc(toExpandedFlagList(params[0], line))}" cross="${params[1]=='Y'?'true':'false'}"${commAttr(line)}>"""
 			affixCount[type]++
 			lastAffixFlag = params[0]
 			
@@ -1686,7 +1680,7 @@ class HunspellConverter
 			def (sameFlag, remove, affix, where, morph) = line.params.split(/[\s\t]/, 5).toList()
 			if(sameFlag != lastAffixFlag)
 			{
-				log.warning("Flag ${sameFlag} doesn't match affix header ${lastAffixFlag} on line:\r\n" + line.text)
+				log.warning("Flag ${sameFlag} doesn't match affix header ${lastAffixFlag}" + troubleOnLine(line))
 				line.xml = ""
 			}
 			else
@@ -1697,7 +1691,7 @@ class HunspellConverter
 				if(remove && remove != "0"){line.xml += """ remove="${esc(remove)}\""""}
 				if(add && add != "0"){line.xml += """ add="${esc(add)}\""""}
 				if(where && where != "."){line.xml += """ where="${esc(where)}\""""}
-				if(flags){line.xml += """ combineFlags="${esc(toExpandedFlagList(flags, line.text))}\""""}
+				if(flags){line.xml += """ combineFlags="${esc(toExpandedFlagList(flags, line))}\""""}
 				if(morph){line.xml += """ morph="${esc(expandMorphemeAlias(morph))}\""""}
 				line.xml += "${commAttr(line)}/>"
 			}
