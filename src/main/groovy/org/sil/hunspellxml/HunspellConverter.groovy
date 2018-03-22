@@ -862,9 +862,11 @@ class HunspellConverter
 			def word = ""
 			def flags = ""
 			def morph = ""
-			if(line =~ /^(.*?[^\\])\/.*/)
+			if(line =~ /^(\/?.*?[^\\])\/.*/)
 			{
-				word = line.replaceAll(/^(.*?[^\\])\/.*/, "\$1") //read up to the first / not preceded by a \ and keep that as the word
+				//Read up to the first / not preceded by a \ and keep that as the word
+				//But the first character may be a / and that will be part of the word
+				word = line.replaceAll(/^(\/?.*?[^\\])\/.*/, "\$1")
 				def rest = line - word
 				rest = rest.replaceAll(/\//, "")
 				(flags, morph) = rest.split(/[\s\t]/, 2).toList()

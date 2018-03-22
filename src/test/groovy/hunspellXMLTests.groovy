@@ -18,7 +18,10 @@ cli("-o=${out}/cop_EG.xml -l=debug ${dir}/cop_EG.dic")
 cli("-o=${out}/version.xml ${dir}/version.dic")
 //del(["$dir/version.xml"])
 
-//wordsFlagsMorph
-cli("-hs -ts -rt -o=${out}/wordsFlagsMorph ${dir}/wordsFlagsMorph.xml")
-//del(["$out/wordsFlagsMorph.aff", "$out/wordsFlagsMorph.dic", "$out/wordsFlagsMorph.good", "$out/wordsFlagsMorph.wrong"])
+//wordFlagsMorph
+cli("-hs -ts -rt -o=${out}/wordFlagsMorph ${dir}/wordFlagsMorph.xml")
+//del(["$out/wordFlagsMorph.aff", "$out/wordFlagsMorph.dic", "$out/wordFlagsMorph.good", "$out/wordFlagsMorph.wrong"])
 
+//wordSlash
+cli("-o=${out}/wordSlash.xml ${dir}/wordSlash.dic")
+//del(["$out/wordSlash.aff", "$out/wordSlash.dic", "$out/wordSlash.good", "$out/wordSlash.wrong"])

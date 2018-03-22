@@ -1,0 +1,6 @@
+FLAG long
+WORDCHARS /
+
+PFX or N 2
+PFX or 0 -or
+PFX or 0 _one
