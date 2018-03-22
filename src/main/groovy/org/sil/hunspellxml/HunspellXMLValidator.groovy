@@ -1048,6 +1048,7 @@ public static final relaxngXMLTemplate = '''
 		
 		<!-- dictionaryFile -->
 		<element name="dictionaryFile">
+		<optional><attribute name="wordCount"><data type="integer"/></attribute></optional>
 		[[COMMENT_ATTR]]
 		<interleave>
 			<!-- words -->

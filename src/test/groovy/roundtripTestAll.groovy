@@ -17,12 +17,17 @@ def doFailing = false
 def failingList = [
 	//1.3.2
 	"arabic.dic", //This fails when running Hunspell's test too:> ./test.sh arabic
-	"forbiddenword.dic", //Something weird here. Changing word order in .dic file to match original .dic file causes this to pass tests.
+	//"forbiddenword.dic", //Something weird here. Changing word order in .dic file to match original .dic file causes this to pass tests.
 	"utf8_nonbmp.dic" //This fails when running Hunspell's test too:> ./test.sh utf8_nonbmp
 	//1.6.2
 	//"arabic.dic", //Is it detecting a long FLAG type without long being specified?
 	//"base_utf.dic",
 	//"forbiddenword.dic", //Something weird here. Changing word order in .dic file to match original .dic file causes this to pass tests. Dic file header indicates less words than actually appear.
+]
+
+//Some files may need special options to be set in order to process correctly.
+def specialSettings = [
+	"forbiddenword.dic":[h2x:[groupWordsByData:false], x2h:[sortDictionaryData:false]]
 ]
 
 def fileList = []
@@ -53,11 +58,11 @@ for(testFile in fileList)
 	
 	deleteFiles()
 	
-	
+	def options = specialSettings[new File(testFile.toString()).getName()]
 	def encoding = getTestEncoding(new File(testFile.toString().replaceAll(/(\.dic|\.aff)/, ".test")))
 	//println("Encoding: ${encoding}")
-	hunspellToXML(testFile.toString(), encoding)
-	xmlToHunspell("${TEST_OUTPUT}/und.xml")
+	hunspellToXML(testFile.toString(), encoding, options?.h2x ?: [:])
+	xmlToHunspell("${TEST_OUTPUT}/und.xml", options?.x2h ?: [:])
 	copyExtraFiles(testFile)
 	testRoundtrip("${TEST_OUTPUT}")
 	
@@ -105,16 +110,18 @@ def getTestEncoding(file)
 	return "ISO8859-1"
 }
 
-def hunspellToXML(file, encoding)
+def hunspellToXML(file, encoding, specialOptions)
 {
-	def hc = new HunspellConverter(file, [
+	def options = [
 			outputFileName:"${TEST_OUTPUT}/und.xml",
 			defaultCharSet:encoding,
 			suppressAutoComments:true, suppressAutoBlankLines:true,
 			logLevel:logLevel,
-			preferWallOfText:false])
-	//Possible options:
-	//charSet
+			preferWallOfText:false,
+			groupWordsByData:true]
+	options.putAll(specialOptions)
+
+	def hc = new HunspellConverter(file, options)
 	hc.convert()
 	
 	def infoLog = hc.log.infoLog.toString()
@@ -123,19 +130,23 @@ def hunspellToXML(file, encoding)
 }
 
 
-def xmlToHunspell(file)
+def xmlToHunspell(file, specialOptions)
 {
 	File xmlFile = new File(file)
 	def fileName = xmlFile.getName().replaceAll(/\.[xX][mM][lL]$/, "")
-	def hxc = new HunspellXMLConverter(xmlFile,
-		[hunspell:true, tests:true, thesaurus:false,
+	
+	def options = [hunspell:true, tests:true, thesaurus:false,
 		license:false, readme:false,
 		firefox:false, opera:false, libreOffice:false,
 		hunspellFileName:"und",
 		customPath:File.separator,
 		relaxNG:true, runTests:false,
 		suppressAutoComments:true, suppressAutoBlankLines:true,
-		logLevel:logLevel])
+		sortDictionaryData:true,
+		logLevel:logLevel]
+	options.putAll(specialOptions)
+	
+	def hxc = new HunspellXMLConverter(xmlFile, options)
 	hxc.convert()
 	
 	def data = hxc.parser?.data

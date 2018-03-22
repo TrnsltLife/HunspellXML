@@ -29,6 +29,7 @@ class HunspellXMLData
 	def dicFile = new StringBuffer()
 	def dicList = []
 	def dicCount = 0
+	def dicOrigCount = -1
 	
 	//MyThes Thesaurus
 	def datFile = new StringBuffer()

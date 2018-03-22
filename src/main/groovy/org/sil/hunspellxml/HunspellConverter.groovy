@@ -21,6 +21,7 @@ class HunspellConverter
 		defaultCharSet:"",
 		defaultFlagType:"",
 		defaultLangCode:"",
+		groupWordsByData:true, //group words in clusters by their flag and morph data
 		logLevel:Log.WARNING,
 		outputFileName:"",
 		preferWallOfText:false,	//prefer a big wall of text for MyThes data instead of putting it in XML tags
@@ -29,7 +30,7 @@ class HunspellConverter
 		skipTests:false,
 		skipDat:false,
 		suppressMyBlankLines:false,
-		suppressMyComments:false
+		suppressMyComments:false,
 		])
 	def options = [:]
 	
@@ -834,12 +835,15 @@ class HunspellConverter
 	{
 		def text = dicFile.getText(javaCharSet)
 		if(text.startsWith("\uFEFF")){text -= "\uFEFF"} //remove UTF-8 BOM
-		def lines = text.split("\r?\n").toList()
+		def lines = text.split("\r?\n").toList().findAll{it.trim() != ""}
+		def wordLineCount = lines.size() - 1 //count of lines with words on them
 		
 		//The first line contains the count of how many words in the dictionary.
 		def count = lines[0].replaceAll(/^([0-9]+).*/, '$1')
 		if(count.isInteger()){count = Integer.parseInt(count)}
 		else{count = -1}
+		if(count > -1 && count != wordLineCount)
+		log.warning("Word count in dictionary file (${count}) does not match the number of words found (${wordLineCount})." + troubleOnLine([text:lines[0], number:0, file:'dic']))
 
 		//The first line can also contain an end-of-line comment. Get this comment.
 		def comment = ""
@@ -851,6 +855,7 @@ class HunspellConverter
 		
 		//Loop over all the words and sort them into the wordMap keyed by flag and morph
 		def wordMap = [:]
+		def wordList = []
 		for(int i=1; i<lines.size(); i++)
 		{
 			def line = lines[i]
@@ -880,34 +885,83 @@ class HunspellConverter
 			//Check the flags here so we can test for errors and output a good error message
 			toExpandedFlagList(flags, [text:line, number:i+1, file:'dic'])
 			
-			def key = flags + "\t" + morph
-			if(!wordMap[key])
+			if(options.groupWordsByData)
 			{
-				wordMap[key] = []
+				def key = flags + "\t" + morph
+				if(!wordMap[key])
+				{
+					wordMap[key] = []
+				}
+				wordMap[key] << word
 			}
-			wordMap[key] << word
+			else
+			{
+				wordList << [line:line, word:word, flags:flags, morph:morph]
+			}
 		}
 		
 		//Create output for all the words, each in a <words...> group by flag and morph
 		StringBuffer wordWriter = new StringBuffer()
-		wordWriter << "<dictionaryFile${comment}>" + EOL
-		for(key in wordMap.keySet().sort())
+		
+		wordWriter << "<dictionaryFile${comment}"
+		//If there's a mismatch between actual number of words and the first line's word count:
+		if(count != wordLineCount)
 		{
-			def (flags, morph) = key.split("\t", 2).toList()
-			wordWriter << "<words"
-			if(flags){wordWriter << """ flags="${esc(toExpandedFlagList(flags, [:], false))}\""""}
-			if(morph){wordWriter << """ morph="${esc(expandMorphemeAlias(morph))}\""""}
-			wordWriter << ">" + EOL
-			if(options.preferWallOfText)
+			wordWriter << ' wordCount="' + count + '"'
+		}
+		wordWriter << ">" + EOL
+		
+		//Gather words together by their flag and morph data
+		if(options.groupWordsByData)
+		{
+			for(key in wordMap.keySet().sort())
 			{
-				wordMap[key].sort().each{word->
-					wordWriter << esc(word) + EOL
+				def (flags, morph) = key.split("\t", 2).toList()
+				wordWriter << "<words"
+				if(flags){wordWriter << """ flags="${esc(toExpandedFlagList(flags, [:], false))}\""""}
+				if(morph){wordWriter << """ morph="${esc(expandMorphemeAlias(morph))}\""""}
+				wordWriter << ">" + EOL
+				//output Hunspell dictionary text format
+				if(options.preferWallOfText)
+				{
+					wordMap[key].sort().each{word->
+						wordWriter << esc(word) + EOL
+					}
 				}
+				//output HunspellXML tags <w>...</w>
+				else
+				{
+					wordMap[key].sort().each{word->
+						wordWriter << "<w>" + esc(word) + "</w>" + EOL
+					}
+				}
+				wordWriter << "</words>" + EOL
 			}
-			else
+		}
+		//Don't gather words. Output them in the same order they are in the Hunspell file.
+		else
+		{
+			wordWriter << "<words>" + EOL
+			for(line in wordList)
 			{
-				wordMap[key].sort().each{word->
-					wordWriter << "<w>" + esc(word) + "</w>" + EOL
+				//output Hunspell dictionary text format
+				if(options.preferWallOfText)
+				{
+					wordWriter << esc(line:line) + EOL
+				}
+				//output HunspellXML tags <w>...</w>
+				else
+				{
+					wordWriter << "<w"
+					if(line.flags)
+					{
+						wordWriter << ' flags="' + esc(toExpandedFlagList(line.flags, [:], false)) + '"'
+					}
+					if(line.morph)
+					{
+						wordWriter << ' morph="' + esc(expandMorphemeAlias(line.morph)) + '"'
+					}
+					wordWriter << ">" + esc(line.word) + "</w>" + EOL
 				}
 			}
 			wordWriter << "</words>" + EOL

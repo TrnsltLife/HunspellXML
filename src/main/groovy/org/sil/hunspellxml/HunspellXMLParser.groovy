@@ -17,6 +17,7 @@ class HunspellXMLParser
 	def suppressMetadata = false
 	def suppressMyBlankLines = false
 	def suppressMyComments = false
+	def sortDictionaryData = true
 	
 	public static final EOL = "\r\n"
 	static final String FS = File.separator
@@ -162,7 +163,7 @@ class HunspellXMLParser
 		data.basePath = basePath
 		data.metadata.flagType = flagType
 		check = new HunspellXMLFlagChecker(flagType, log)
-		suppressOutput(exportOptions)
+		setExportOptions(exportOptions)
 	}
 	
 	HunspellXMLParser(File basePath, String flagType, Log log)
@@ -180,7 +181,7 @@ class HunspellXMLParser
 		check = new HunspellXMLFlagChecker(flagType, log)
 	}
 	
-	def suppressOutput(Map exportOptions)
+	def setExportOptions(Map exportOptions)
 	{
 		if(exportOptions.suppressAutoBlankLines == true)
 		{
@@ -201,6 +202,10 @@ class HunspellXMLParser
 		if(exportOptions.suppressMyComments == true)
 		{
 			suppressMyComments = true
+		}
+		if(exportOptions.sortDictionaryData == false)
+		{
+			sortDictionaryData = false
 		}
 	}
 	
@@ -625,13 +630,29 @@ class HunspellXMLParser
 	Object dictionaryFile(String nodeName, Node node)
 	{
 		data.currentSection = "dictionaryFile"
+		if(node.attributes().containsKey("wordCount"))
+		{
+			data.dicOrigCount = Integer.parseInt(node.attributes().wordCount)
+		}
 		processChildren(node)
 		
 		//Create dicFile
 		//Number of words
-		data.dicFile << data.dicCount + commAttr(node) + EOL
+		//Based on the count in the wordCount attribute which reflects the original Hunspell .dic file's count on its first line
+		if(data.dicOrigCount > -1)
+		{
+			data.dicFile << data.dicOrigCount + commAttr(node) + EOL
+		}
+		//Or the count of the actual number of lines with words found in the file
+		else
+		{
+			data.dicFile << data.dicCount + commAttr(node) + EOL
+		}
 		//Sorted list of words
-		data.dicList == data.dicList.sort()
+		if(sortDictionaryData)
+		{
+			data.dicList == data.dicList.sort()
+		}
 		data.dicList.each{line->
 			data.dicFile << line
 		}
