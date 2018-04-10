@@ -1,7 +1,7 @@
 HunspellXML
 ===========
 
-A Groovy library to help create Hunspell dictionaries using an easy to read XML format.
+A [command line tool](https://github.com/TrnsltLife/HunspellXML/wiki/Command-Line-Tool) backed by a Groovy library to help create Hunspell dictionaries using an easy to read XML format.
 
 Visit the [wiki](https://github.com/TrnsltLife/HunspellXML/wiki) for more information.
 
