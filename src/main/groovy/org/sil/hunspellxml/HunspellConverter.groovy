@@ -265,6 +265,10 @@ class HunspellConverter
 			{
 				name = name - "thes_"
 			}
+			else if(name.startsWith("th_"))
+			{
+				name = name - "th_"
+			}
 			name = name.replaceAll(/\.dat/, ".aff")
 			affFile = new File(datFile.getParent() + File.separator + name)
 		}
