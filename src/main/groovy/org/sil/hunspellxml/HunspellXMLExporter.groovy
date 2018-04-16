@@ -162,6 +162,7 @@ class HunspellXMLExporter
 		{
 			customPath = data.metadata.filepath
 		}
+		/*
 		if(customPath)
 		{
 			if(!(new File(customPath).isAbsolute())) //path is relative
@@ -173,6 +174,15 @@ class HunspellXMLExporter
 		else
 		{
 			baseDir = data.basePath.getCanonicalPath() + FS + filename
+		}
+		*/
+		if(customPath)
+		{
+			baseDir = customPath
+		}
+		else
+		{
+			baseDir = filename
 		}
 		baseDir = new File(baseDir).getCanonicalPath()
 		return baseDir
