@@ -1229,14 +1229,14 @@ class HunspellXMLParser
 		{
 			if(child.name() == "good")
 			{
-				//preserve line structure, eliminate leading/trailing spaces
-				def text = child.text().readLines().collect{it.trim()}.join(EOL)
+				//preserve line structure, eliminate leading/trailing spaces and blank lines
+				def text = child.text().readLines().collect{it.trim()}.findAll{it != ""}.join(EOL)
 				data.goodTestFile << text + EOL
 			}
 			else if(child.name() == "bad")
 			{
-				//preserve line structure, eliminate leading/trailing spaces
-				def text = child.text().readLines().collect{it.trim()}.join(EOL)
+				//preserve line structure, eliminate leading/trailing spaces and blank lines
+				def text = child.text().readLines().collect{it.trim()}.findAll{it != ""}.join(EOL)
 				data.badTestFile << text + EOL
 			}
 		}

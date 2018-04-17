@@ -28,3 +28,4 @@ cli("-o=${out}/wordSlash.xml ${dir}/wordSlash.dic")
 
 //morphSpaceSlash
 cli("-o=${out}/morphSpaceSlash.xml ${dir}/morphSpaceSlash.dic")
+cli("-hs -ts -o=${out}/morphSpaceSlash ${out}/morphSpaceSlash.xml")
