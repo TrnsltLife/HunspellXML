@@ -139,7 +139,7 @@ def xmlToHunspell(file, specialOptions)
 		license:false, readme:false,
 		firefox:false, opera:false, libreOffice:false,
 		hunspellFileName:"und",
-		customPath:File.separator,
+		customPath:"${TEST_OUTPUT}",
 		relaxNG:true, runTests:false,
 		suppressAutoComments:true, suppressAutoBlankLines:true,
 		sortDictionaryData:true,

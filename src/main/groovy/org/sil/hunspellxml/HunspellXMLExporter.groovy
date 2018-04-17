@@ -39,6 +39,7 @@ class HunspellXMLExporter
 		hunspellFileName:"",
 		logLevel:Log.WARNING,
 		sortDictionaryData:true,
+		useOriginalWordCount:false,
 		suppressMetadata:false,
 		suppressAutoBlankLines:false,
 		suppressMyBlankLines:false,

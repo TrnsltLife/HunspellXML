@@ -11,13 +11,7 @@ class HunspellXMLParser
 	
 	HunspellXMLFlagChecker check
 	
-	//Auto-printed line suppression
-	def suppressAutoBlankLines = false
-	def suppressAutoComments = false
-	def suppressMetadata = false
-	def suppressMyBlankLines = false
-	def suppressMyComments = false
-	def sortDictionaryData = true
+	Map exportOptions = [:]
 	
 	public static final EOL = "\r\n"
 	static final String FS = File.separator
@@ -163,50 +157,7 @@ class HunspellXMLParser
 		data.basePath = basePath
 		data.metadata.flagType = flagType
 		check = new HunspellXMLFlagChecker(flagType, log)
-		setExportOptions(exportOptions)
-	}
-	
-	HunspellXMLParser(File basePath, String flagType, Log log)
-	{
-		this.log = log
-		data.basePath = basePath
-		data.metadata.flagType = flagType
-		check = new HunspellXMLFlagChecker(flagType, log)
-	}
-	
-	HunspellXMLParser(File basePath, String flagType)
-	{
-		data.basePath = basePath
-		data.metadata.flagType = flagType
-		check = new HunspellXMLFlagChecker(flagType, log)
-	}
-	
-	def setExportOptions(Map exportOptions)
-	{
-		if(exportOptions.suppressAutoBlankLines == true)
-		{
-			suppressAutoBlankLines = true
-		}
-		if(exportOptions.suppressAutoComments == true)
-		{
-			suppressAutoComments = true
-		}
-		if(exportOptions.suppressMetadata == true)
-		{
-			suppressMetadata = true
-		}
-		if(exportOptions.suppressMyBlankLines == true)
-		{
-			suppressMyBlankLines = true
-		}
-		if(exportOptions.suppressMyComments == true)
-		{
-			suppressMyComments = true
-		}
-		if(exportOptions.sortDictionaryData == false)
-		{
-			sortDictionaryData = false
-		}
+		this.exportOptions.putAll(exportOptions)
 	}
 	
 	def /*HunspellXMLData*/ parseText(String xmlDoc) //returns HunspellXMLData. But specifying that is breaking Eclipse Groovy compilation for some reason.
@@ -268,7 +219,7 @@ class HunspellXMLParser
 	
 	String printBlankLine()
 	{
-		if(!suppressAutoBlankLines)
+		if(!exportOptions.suppressAutoBlankLines)
 		{
 			return EOL
 		}
@@ -277,7 +228,7 @@ class HunspellXMLParser
 	
 	String printComment(String comment)
 	{
-		if(!suppressAutoComments)
+		if(!exportOptions.suppressAutoComments)
 		{
 			return "# " + comment + EOL
 		}
@@ -286,7 +237,7 @@ class HunspellXMLParser
 	
 	String printMetadata(String metadata)
 	{
-		if(!suppressMetadata)
+		if(!exportOptions.suppressMetadata)
 		{
 			return "# " + metadata + EOL
 		}
@@ -438,7 +389,7 @@ class HunspellXMLParser
 
 	Object br(String hunspellName, Node node)
 	{
-		if(!suppressMyBlankLines)
+		if(!exportOptions.suppressMyBlankLines)
 		{
 			def commentFile = currentOutputFile()
 			commentFile << EOL
@@ -502,7 +453,7 @@ class HunspellXMLParser
 	Object comment(String hunspellName, Node node)
 	{
 		def lines = node.text().split(/\r?\n/).toList()
-		if(!suppressMyComments)
+		if(!exportOptions.suppressMyComments)
 		{
 			def commentFile = currentOutputFile()
 			for(line in lines)
@@ -639,7 +590,7 @@ class HunspellXMLParser
 		//Create dicFile
 		//Number of words
 		//Based on the count in the wordCount attribute which reflects the original Hunspell .dic file's count on its first line
-		if(data.dicOrigCount > -1)
+		if(exportOptions.useOriginalWordCount && data.dicOrigCount > -1)
 		{
 			data.dicFile << data.dicOrigCount + commAttr(node) + EOL
 		}
@@ -649,9 +600,9 @@ class HunspellXMLParser
 			data.dicFile << data.dicCount + commAttr(node) + EOL
 		}
 		//Sorted list of words
-		if(sortDictionaryData)
+		if(exportOptions.sortDictionaryData)
 		{
-			data.dicList == data.dicList.sort()
+			data.dicList = data.dicList.sort()
 		}
 		data.dicList.each{line->
 			data.dicFile << line
@@ -1246,23 +1197,23 @@ class HunspellXMLParser
 	{
 		if(node.attributes().autoBlankLines == "true")
 		{
-			suppressAutoBlankLines = true
+			exportOptions.suppressAutoBlankLines = true
 		}
 		if(node.attributes().autoComments == "true")
 		{
-			suppressAutoComments = true
+			exportOptions.suppressAutoComments = true
 		}
 		if(node.attributes().metadata == "true")
 		{
-			suppressMetadata = true
+			exportOptions.suppressMetadata = true
 		}
 		if(node.attributes().myBlankLines == "true")
 		{
-			suppressMyBlankLines = true
+			exportOptions.suppressMyBlankLines = true
 		}
 		if(node.attributes().myComments == "true")
 		{
-			suppressMyComments = true
+			exportOptions.suppressMyComments = true
 		}
 	}
 	

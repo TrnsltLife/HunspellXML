@@ -110,6 +110,14 @@ class HunspellXMLCLI
 				{
 					options.runTests = true
 				}
+				else if(arg == "nws")
+				{
+					options.sortDictionaryData = false
+				}
+				else if(arg == "owc")
+				{
+					options.useOriginalWordCount = true
+				}
 				else if(arg == "s")
 				{
 					options.suppressMetadata = true
@@ -259,6 +267,14 @@ class HunspellXMLCLI
 					arg -= "dl="
 					options.defaultLangCode = arg
 				}
+				else if(arg.startsWith("whf")) //words in Hunspell format
+				{
+					options.wordsInHunspellFormat = true
+				}
+				else if(arg.startsWith("nwg")) //No Word Grouping
+				{
+					options.groupWordsByData = false
+				}
 				else if(arg == "h" || arg == "?")
 				{
 					printUsage()
@@ -407,6 +423,8 @@ HunspellXML [Options] [Output Suppression] [Export Options] hunspellXML_input_fi
 -l=level           Log level: none, error, warning, info, debug
 -rng               Create RelaxNG schema for HunspellXML
 -rt                Run dictionary tests
+-nws               No Word Sorting: dictionary words in original Hunspell format order
+-owc               Original Word Count from the Hunspell file, not actual count based on lines
 
      [Output Suppression]
 -s                 Suppress all extra output
@@ -446,6 +464,8 @@ HunspellXML [Optional Flags] [Output Suppression] [Processing Options] hunspell_
                       [short, long, UTF-8, num]
 -dl=lang_code      Default language code if none is specified in the .aff file, e.g. en_US, fr_FR
 -l=level           Log level: none, error, warning, info, debug
+-nwg               No Word Grouping: no grouping by flags or morphemes; all words in one list
+-whf               Words in Hunspell Format: dictionary and thesaurus data as text, not XML
 
      [Output Suppression]
 -s                 Suppress all extra output

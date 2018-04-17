@@ -21,10 +21,10 @@ class HunspellConverter
 		defaultCharSet:"",
 		defaultFlagType:"",
 		defaultLangCode:"",
-		groupWordsByData:true, //group words in clusters by their flag and morph data
 		logLevel:Log.WARNING,
 		outputFileName:"",
-		preferWallOfText:false,	//prefer a big wall of text for MyThes data instead of putting it in XML tags
+		groupWordsByData:true, //group words in clusters by their flag and morph data
+		wordsInHunspellFormat:false, //prefer a big wall of text for dictionary words and MyThes data instead of putting it in XML tags
 		skipAff:false,
 		skipDic:false,
 		skipTests:false,
@@ -888,7 +888,7 @@ class HunspellConverter
 			rest = rest ?: ""
 			flags = flags ?: ""
 			word += rest
-			word = word.replaceAll(/\\\\//, "/"); //Replace \/ with /
+			//word = word.replaceAll(/\\\\//, "/"); //Replace \/ with /
 			
 			word = word.trim()
 			flags = flags.trim()
@@ -934,7 +934,7 @@ class HunspellConverter
 				if(morph){wordWriter << """ morph="${esc(expandMorphemeAlias(morph))}\""""}
 				wordWriter << ">" + EOL
 				//output Hunspell dictionary text format
-				if(options.preferWallOfText)
+				if(options.wordsInHunspellFormat)
 				{
 					wordMap[key].sort().each{word->
 						wordWriter << esc(word) + EOL
@@ -957,9 +957,9 @@ class HunspellConverter
 			for(line in wordList)
 			{
 				//output Hunspell dictionary text format
-				if(options.preferWallOfText)
+				if(options.wordsInHunspellFormat)
 				{
-					wordWriter << esc(line:line) + EOL
+					wordWriter << esc(line.line) + EOL
 				}
 				//output HunspellXML tags <w>...</w>
 				else
@@ -1026,7 +1026,7 @@ class HunspellConverter
 				StringBuffer wordWriter = new StringBuffer()
 				wordWriter << "<thesaurusFile>" + EOL
 				
-				if(options.preferWallOfText)
+				if(options.wordsInHunspellFormat)
 				{
 					if(lines.size() > 1)
 					{
