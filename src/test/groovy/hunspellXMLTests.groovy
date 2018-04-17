@@ -25,3 +25,6 @@ cli("-hs -ts -rt -o=${out}/wordFlagsMorph ${dir}/wordFlagsMorph.xml")
 //wordSlash
 cli("-o=${out}/wordSlash.xml ${dir}/wordSlash.dic")
 //del(["$out/wordSlash.aff", "$out/wordSlash.dic", "$out/wordSlash.good", "$out/wordSlash.wrong"])
+
+//morphSpaceSlash
+cli("-o=${out}/morphSpaceSlash.xml ${dir}/morphSpaceSlash.dic")

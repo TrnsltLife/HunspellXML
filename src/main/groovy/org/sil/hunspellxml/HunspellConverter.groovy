@@ -866,23 +866,31 @@ class HunspellConverter
 			def word = ""
 			def flags = ""
 			def morph = ""
-			if(line =~ /^(\/?.*?[^\\])\/.*/)
+			def rest = ""
+			
+			//Extract the morpheme field first if it exists
+			//Split on \t or a space followed by a two letter code and colon
+			//e.g. ps:Noun is:2.Pl.Inanim.
+			(rest, morph) = line.split(/(\t|\s(?=[A-Za-z0-9]{2}:))/, 2).toList()
+			rest = rest ?: ""
+			morph = morph ?: ""
+			
+			//Split the word and flags on the first / not preceded by a \
+			//But the first character may be a / and that will be part of the word
+			//Take care of a leading slash if there is one
+			if(rest.startsWith("/"))
 			{
-				//Read up to the first / not preceded by a \ and keep that as the word
-				//But the first character may be a / and that will be part of the word
-				word = line.replaceAll(/^(\/?.*?[^\\])\/.*/, "\$1")
-				def rest = line - word
-				rest = rest.replaceAll(/\//, "")
-				(flags, morph) = rest.split(/[\s\t]/, 2).toList()
-				if(!flags){flags = ""}
-				if(!morph){morph = ""}
+				word += "/"
+				rest -= "/"
 			}
-			else
-			{
-				(word, morph) = line.split(/[\s\t]/, 2).toList()
-				if(!flags){flags = ""}
-				if(!morph){morph = ""}
-			}
+			//Split the word and flags on the first / not preceded by a \
+			(rest, flags) = rest.split(/(?<!\\)\//, 2).toList()
+			rest = rest ?: ""
+			flags = flags ?: ""
+			word += rest
+			word = word.replaceAll(/\\\\//, "/"); //Replace \/ with /
+			
+			word = word.trim()
 			flags = flags.trim()
 			morph = morph.trim()
 			
